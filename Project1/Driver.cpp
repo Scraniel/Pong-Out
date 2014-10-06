@@ -1,5 +1,5 @@
 #include "Input.h"
-#include "Rectangle.h"
+#include "Player.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -8,7 +8,8 @@ GLuint VertexArrayID;
 GLuint ColourArrayID;
 GLuint programID;
 GLuint vertexbuffer;
-Rectangle players[] = { Rectangle(-400.0f, 0.0f, 25.0f, 100.0f), Rectangle(400.0f, 0.0f, 25.0f, 100.0f) };
+short W_HEIGHT_NO_BORDER, W_WIDTH_NO_BORDER;
+Player players[] = { Player(-300.0f, 0.0f, 25.0f, 100.0f, KEY_W, KEY_S, KEY_A, KEY_D), Player(300.0f, 0.0f, 25.0f, 100.0f, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT) };
 
 
 /*
@@ -52,72 +53,38 @@ static void reloadMVPUniform(int player){
 	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &players[player].getModel()[0][0]);
 }
 
-// Store each button press as a boolean. This way, controls are easily configurable through this function
+// You can easily configure which button does which movement by adding cases to input.h
+// and then adding that button to 'player.movementKeys[MOVE_UP]' or whatever direction
+// you want. 
 static void processKeyPresses(){
-	float newX;
-	float newY;
-
-	for (int i = 0; i < sizeof(keysPressed); i++){
-		if (keysPressed[i]){
-			switch (i){
-			case 0:
-				newY = players[0].getY() + 10;
-				if (newY > W_HEIGHT / 2.0){
-					newY = W_HEIGHT / 2.0;
+	for (Player &player : players){
+		short * movementKeys = player.getMovementKeys();
+		for (int i = 0; i < MOVE_KEYS_NUMBER; i++){
+			if (keysPressed[movementKeys[i]]){
+				switch (i){
+				case MOVE_UP:
+					player.setdY(10);
+					if (debug){
+						fprintf(stderr, "Player 1 Y: %f\nPlayer 2 Y: %f\n\n", players[0].getY(), players[1].getY());
+					}
+					break;
+				case MOVE_DOWN:
+					player.setdY(-10);
+					if (debug){
+						fprintf(stderr, "Player 1 Y: %f\nPlayer 2 Y: %f\n\n", players[0].getY(), players[1].getY());
+					}
+					break;
+				case MOVE_LEFT:
+					// In pong-out, you can only move up and down!
+					break;
+				case MOVE_RIGHT:
+					// In pong-out, you can only move up and down!
+					break;
 				}
-				players[0].setY(newY);
-				break;
-			case 1:
-				newY = players[0].getY() - 10;
-				if (newY < (W_HEIGHT / 2.0)*(-1.0)){
-					newY = (W_HEIGHT / 2.0)*(-1.0);
-				}
-				players[0].setY(newY);
-				break;
-			case 2: 
-				newX = players[0].getX() + 10;
-				if (newX > W_WIDTH / 2.0){
-					newX = W_WIDTH / 2.0;
-				}
-				players[0].setX(newX);
-				break;
-			case 3: 
-				newX = players[0].getX() - 10;
-				if (newX > (W_WIDTH / 2.0)*(-1.0)){
-					newX = (W_WIDTH / 2.0)*(-1.0);
-				}
-				players[0].setX(newX);
-				break;
-			case 4:
-				newY = players[1].getY() + 10;
-				if (newY > W_HEIGHT / 2.0){
-					newY = W_HEIGHT / 2.0;
-				}
-				players[1].setY(newY);
-				break;
-			case 5:
-				newY = players[1].getY() - 10;
-				if (newY < (W_HEIGHT / 2.0)*(-1.0)){
-					newY = (W_HEIGHT / 2.0)*(-1.0);
-				}
-				players[1].setY(newY);
-				break;
-			case 6:
-				newX = players[1].getX() + 10;
-				if (newX > W_WIDTH / 2.0){
-					newX = W_WIDTH / 2.0;
-				}
-				players[1].setX(newX);
-				break;
-			case 7:
-				newX = players[1].getX() - 10;
-				if (newX > (W_WIDTH / 2.0)*(-1.0)){
-					newX = (W_WIDTH / 2.0)*(-1.0);
-				}
-				players[1].setX(newX);
-				break;
 			}
 		}
+
+		player.move();
 	}
 }
 
@@ -141,6 +108,10 @@ int main(void)
 
 	// Open a window
 	window = glfwCreateWindow(W_WIDTH, W_HEIGHT, "Modern OpenGL", NULL, NULL);
+
+	// TODO: Find a way to do this without using magic numbers. 
+	W_HEIGHT_NO_BORDER = W_HEIGHT - 100;
+	W_WIDTH_NO_BORDER = W_WIDTH - 100;
 
 	if (!window)
 	{
@@ -220,7 +191,7 @@ int main(void)
 
 	} // Check if the ESC key was pressed or the window was closed
 	while (!glfwWindowShouldClose(window));
-
+	fprintf(stderr, "%d\n%d\n", players[0].getY(), players[1].getY());
 	VAOcleanup();
 	// Close OpenGL window and terminate GLFW
 	glfwTerminate();

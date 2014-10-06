@@ -1,3 +1,6 @@
+#ifndef STDGLINCLUDES_H
+#define STDGLINCLUDES_H
+
 #include <GL/glew.h>
 
 // Using the dynamic version of gflw instead of static
@@ -9,3 +12,5 @@
 
 
 GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path);
+
+#endif

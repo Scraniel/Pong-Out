@@ -1,10 +1,17 @@
+#ifndef RECTANGLE_H
+#define RECTANGLE_H
+
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Constants.h"
+extern short W_WIDTH_NO_BORDER;
+extern short W_HEIGHT_NO_BORDER;
+
 
 // x and y coordinates are for the top left corner
 class Rectangle {
+protected:
 	float width, height, x, y;
 	glm::mat4 model;
 public:
@@ -21,3 +28,4 @@ public:
 	glm::mat4 getModel();
 
 };
+#endif
