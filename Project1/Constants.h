@@ -19,6 +19,7 @@
 
 extern short W_HEIGHT_NO_BORDER;
 extern short W_WIDTH_NO_BORDER;
+extern bool debug;
 
 
 #endif

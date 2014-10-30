@@ -1,16 +1,33 @@
+/*
+*TODO: Make a 'in game object' parent class to use for player, ball, bricks, powerups, etc. It may end up replacing the rectangle class.
+*      It will contain information about sprites, state, etc. 
+*/
 #include "Input.h"
 #include "Player.h"
+#include "Ball.h"
+#include "Database.h"
 #include <stdio.h>
 #include <stdlib.h>
+class Ball;
 
 GLFWwindow* window;
 GLuint VertexArrayID;
-GLuint ColourArrayID;
 GLuint programID;
 GLuint vertexbuffer;
+GLuint colourBuffer;
 short W_HEIGHT_NO_BORDER, W_WIDTH_NO_BORDER;
-Player players[] = { Player(-300.0f, 0.0f, 25.0f, 100.0f, KEY_W, KEY_S, KEY_A, KEY_D), Player(300.0f, 0.0f, 25.0f, 100.0f, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT) };
+Player players[] = { Player(-300.0f, 0.0f, 25.0f, 100.0f, KEY_W, KEY_S, KEY_A, KEY_D, NULL), Player(300.0f, 0.0f, 25.0f, 100.0f, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, NULL) };
+Ball balls[] = { Ball(-300.0f, 0.0f, 25.0f, 25.0f, &players[0]), Ball(300.0f, 0.0f, 25.0f, 25.0f, &players[1]) };
 
+// Working on -1 -> 1 with x and y
+GLfloat vertexData[] = {
+	-1.0f, 1.0f, 0.0f,
+	1.0f, 1.0f, 0.0f,
+	-1.0f, -1.0f, 0.0f,
+	-1.0f, -1.0f, 0.0f,
+	1.0f, 1.0f, 0.0f,
+	1.0f, -1.0f, 0.0f
+};
 
 /*
 * Creates VAO's
@@ -21,28 +38,54 @@ static void generateVAOs(){
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
 
-	glGenBuffers(1, &ColourArrayID);
-
 	// Create and compile our GLSL program from the shaders
 	programID = LoadShaders("vertexShader.glsl", "fragmentShader.glsl");
 }
 
-// TODO: Should be some way to make this function work, but for now it's in main.
-static void bindVAOs(GLfloat *vertexData){
+static void setupVAOs(){
+	// 1st attribute buffer : vertices
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	glVertexAttribPointer(
+		0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+		3,                  // size
+		GL_FLOAT,           // type
+		GL_FALSE,           // normalized?
+		0,                  // stride
+		(void*)0            // array buffer offset
+		);
+	glEnableVertexAttribArray(1); // match layout # in shader
+
+	// 2nd attribute buffer : colour NOT WORKING YET
+	glBindBuffer(GL_ARRAY_BUFFER, colourBuffer);
+	glVertexAttribPointer(
+		1,		// attribute layout # above
+		3,		// # of components (ie XYZ )
+		GL_FLOAT,	// type of components
+		GL_FALSE,	// need to be normalized?
+		0,		// stride
+		(void*)0	// array buffer offset
+		);
+}
+
+// This function may need to change if something is required to be rendered as something different than a rectangle
+static void bindVAOs(){
 
 	glGenBuffers(1, &vertexbuffer);
+	glGenBuffers(1, &colourBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
 }
 
 static void VAOcleanup(){
-	// Cleanup VAO's
+	// Cleanup VAO's and buffers
 	glDeleteBuffers(1, &vertexbuffer);
+	glDeleteBuffers(1, &colourBuffer);
 	glDeleteVertexArrays(1, &VertexArrayID);
 	glDeleteProgram(programID);
 }
 
-static void reloadMVPUniform(int player){
+static void reloadMVPUniform(Rectangle *object){
 	// Get a handle for our "MVP" uniform.
 	// Only at initialisation time.
 	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
@@ -50,7 +93,7 @@ static void reloadMVPUniform(int player){
 	// Send our transformation to the currently bound shader,
 	// in the "MVP" uniform
 	// For each model you render, since the MVP will be different (at least the M part)
-	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &players[player].getModel()[0][0]);
+	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &object->getModel()[0][0]);
 }
 
 // You can easily configure which button does which movement by adding cases to input.h
@@ -110,8 +153,8 @@ int main(void)
 	window = glfwCreateWindow(W_WIDTH, W_HEIGHT, "Modern OpenGL", NULL, NULL);
 
 	// TODO: Find a way to do this without using magic numbers. 
-	W_HEIGHT_NO_BORDER = W_HEIGHT - 100;
-	W_WIDTH_NO_BORDER = W_WIDTH - 100;
+	W_HEIGHT_NO_BORDER = W_HEIGHT - 25;
+	W_WIDTH_NO_BORDER = W_WIDTH - 25;
 
 	if (!window)
 	{
@@ -139,21 +182,9 @@ int main(void)
 	// Dark blue background
 	glClearColor(0.0f, 0.0f, 0.3f, 0.0f);
 
-	// Working on -1 -> 1 with x and y
-	GLfloat vertexData[] = {
-		-1.0f, 1.0f, 0.0f,
-		1.0f, 1.0f, 0.0f,
-		-1.0f, -1.0f, 0.0f,
-		-1.0f, -1.0f, 0.0f,
-		1.0f, 1.0f, 0.0f, 
-		1.0f, -1.0f, 0.0f
-	};
-
 	generateVAOs();
-	// TODO: Find a way to change this to bindVAOs(vertexData)
-	glGenBuffers(1, &vertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
+	bindVAOs();
+
 
 	do{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -165,27 +196,40 @@ int main(void)
 		// Use our shader
 		glUseProgram(programID);
 
-		for (int i = 0; i < 2; i++){
-			reloadMVPUniform(i);
+		// render the players
+		for (Player &player : players){
+			reloadMVPUniform(&player);
 
-			// 1st attribute buffer : vertices
-			glEnableVertexAttribArray(0);
-			glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-			glVertexAttribPointer(
-				0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-				3,                  // size
-				GL_FLOAT,           // type
-				GL_FALSE,           // normalized?
-				0,                  // stride
-				(void*)0            // array buffer offset
-				);
+			// Not actually using VAO's right now. FIX THIS.
+			setupVAOs();
 
-			// Draw the triangle !
+			// Draw the triangles!
 			glDrawArrays(GL_TRIANGLES, 0, 2 * 3); // 2*(3 indices starting at 0) -> 2 triangles = square
 
 			glDisableVertexAttribArray(0);
 		}
 
+		// render the balls
+		for (Ball &ball : balls){
+			/*TODO: MOVE THIS INTO DATABASE ONCE YOU MOVE ALL THE OBJECTS INTO THERE!*/
+			for (Player &player : players){
+				Database::collide(&ball, &player);
+			}
+
+			/*************************************************************************/
+			ball.move();
+
+			reloadMVPUniform(&ball);
+
+			// Not actually using VAO's right now. FIX THIS.
+			setupVAOs();
+
+			// Draw the triangles!
+			glDrawArrays(GL_TRIANGLES, 0, 2 * 3); // 2*(3 indices starting at 0) -> 2 triangles = square
+
+			glDisableVertexAttribArray(0);
+		}
+		
 		// Swap buffers
 		glfwSwapBuffers(window);
 

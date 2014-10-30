@@ -5,6 +5,8 @@ Rectangle::Rectangle(float x, float y, float width, float height){
 	this->y = y;
 	this->width = width;
 	this->height = height;
+	this->dx = 0;
+	this->dy = 0;
 
 	// need to implement scaling based on width and height
 	glm::mat4 scale = glm::scale(glm::vec3(width / W_WIDTH, height / W_HEIGHT, 0.0));
@@ -14,6 +16,8 @@ Rectangle::Rectangle(float x, float y, float width, float height){
 	this->model = translate * rotate * scale;
 		
 }
+
+Rectangle::Rectangle(){}
 
 void Rectangle::setWidth(float width){
 	this->width = width;
@@ -67,4 +71,20 @@ void Rectangle::setModel(glm::mat4 model){
 
 glm::mat4 Rectangle::getModel(){
 	return this->model;
+}
+
+void Rectangle::setdY(float dy){
+	this->dy = dy;
+}
+
+void Rectangle::setdX(float dx){
+	this->dx = dx;
+}
+
+float Rectangle::getdX(){
+	return this->dx;
+}
+
+float Rectangle::getdY(){
+	return this->dy;
 }

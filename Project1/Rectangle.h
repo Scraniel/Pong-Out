@@ -12,10 +12,11 @@ extern short W_HEIGHT_NO_BORDER;
 // x and y coordinates are for the top left corner
 class Rectangle {
 protected:
-	float width, height, x, y;
+	float width, height, x, y, dx, dy;
 	glm::mat4 model;
 public:
 	Rectangle(float, float, float, float);
+	Rectangle();
 	void setWidth(float);
 	void setHeight(float);
 	void setX(float);
@@ -25,6 +26,10 @@ public:
 	float getHeight();
 	float getX();
 	float getY();
+	void setdX(float);
+	void setdY(float);
+	float getdX();
+	float getdY();
 	glm::mat4 getModel();
 
 };
