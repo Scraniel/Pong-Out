@@ -1,6 +1,6 @@
 #include "Player.h"
 
-Player::Player(float x, float y, float width, float height, short upKey, short downKey, short leftKey, short rightKey, Ball * ball) : Rectangle(x, y, width, height){
+Player::Player(float x, float y, float width, float height, glm::vec3 colour, short upKey, short downKey, short leftKey, short rightKey, Ball * ball) : Rectangle(x, y, width, height, colour){
 	this->movementKeys[MOVE_UP] = upKey;
 	this->movementKeys[MOVE_DOWN] = downKey;
 	this->movementKeys[MOVE_LEFT] = leftKey;
@@ -10,6 +10,7 @@ Player::Player(float x, float y, float width, float height, short upKey, short d
 	this->moveRight = false;
 	this->moveLeft = false;
 	this->ball = ball;
+	this->score = 0;
 }
 
 Player::Player(){}
@@ -20,11 +21,11 @@ void Player::move(){
 	float newY, newX;
 	
 	newY = this->y + this->dy;
-	if (newY > (W_HEIGHT - height) / 2.0){
-		newY = (W_HEIGHT - height) / 2.0;
+	if (newY > W_HEIGHT){
+		newY = W_HEIGHT;
 	}
-	else if (newY < ((W_HEIGHT - height) / 2.0)*(-1.0)){
-		newY = ((W_HEIGHT - height) / 2.0)*(-1.0);
+	else if (newY - this->getHeight() < 0){
+		newY = this->getHeight();
 	}
 	this->setY(newY);
 

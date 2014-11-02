@@ -14,8 +14,9 @@ class Rectangle {
 protected:
 	float width, height, x, y, dx, dy;
 	glm::mat4 model;
+	glm::vec3 colour;
 public:
-	Rectangle(float, float, float, float);
+	Rectangle(float, float, float, float, glm::vec3);
 	Rectangle();
 	void setWidth(float);
 	void setHeight(float);
@@ -31,6 +32,8 @@ public:
 	float getdX();
 	float getdY();
 	glm::mat4 getModel();
+	glm::vec3 getColour();
+	void Rectangle::setColour(glm::vec3);
 
 };
 #endif

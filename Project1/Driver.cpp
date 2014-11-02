@@ -16,17 +16,17 @@ GLuint programID;
 GLuint vertexbuffer;
 GLuint colourBuffer;
 short W_HEIGHT_NO_BORDER, W_WIDTH_NO_BORDER;
-Player players[] = { Player(-300.0f, 0.0f, 25.0f, 100.0f, KEY_W, KEY_S, KEY_A, KEY_D, NULL), Player(300.0f, 0.0f, 25.0f, 100.0f, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, NULL) };
-Ball balls[] = { Ball(-300.0f, 0.0f, 25.0f, 25.0f, &players[0]), Ball(300.0f, 0.0f, 25.0f, 25.0f, &players[1]) };
+Player players[] = { Player(100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, BLUE, KEY_W, KEY_S, KEY_A, KEY_D, NULL), Player(W_WIDTH - 100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, RED, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, NULL) };
+Ball balls[] = { Ball(300.0f, 0.0f, 25.0f, 25.0f, players[0].getColour(), &players[0]), Ball(500.0f, 0.0f, 25.0f, 25.0f, players[1].getColour(), &players[1]) };
 
 // Working on -1 -> 1 with x and y
 GLfloat vertexData[] = {
-	-1.0f, 1.0f, 0.0f,
-	1.0f, 1.0f, 0.0f,
-	-1.0f, -1.0f, 0.0f,
-	-1.0f, -1.0f, 0.0f,
-	1.0f, 1.0f, 0.0f,
-	1.0f, -1.0f, 0.0f
+	0.0f, 0.0f, 0.0f,
+	2.0f, 0.0f, 0.0f,
+	0.0f, -2.0f, 0.0f,
+	0.0f, -2.0f, 0.0f,
+	2.0f, 0.0f, 0.0f,
+	2.0f, -2.0f, 0.0f
 };
 
 /*
@@ -36,13 +36,16 @@ static void generateVAOs(){
 
 	// Creating and binding Vertex Array Object (VAO)
 	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
+	glGenBuffers(1, &vertexbuffer);
+	glGenBuffers(1, &colourBuffer);
 
 	// Create and compile our GLSL program from the shaders
 	programID = LoadShaders("vertexShader.glsl", "fragmentShader.glsl");
 }
 
 static void setupVAOs(){
+	glBindVertexArray(VertexArrayID);
+
 	// 1st attribute buffer : vertices
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -66,15 +69,20 @@ static void setupVAOs(){
 		0,		// stride
 		(void*)0	// array buffer offset
 		);
+
+	glBindVertexArray(0);
 }
 
 // This function may need to change if something is required to be rendered as something different than a rectangle
-static void bindVAOs(){
-
-	glGenBuffers(1, &vertexbuffer);
-	glGenBuffers(1, &colourBuffer);
+static void bindVAOs(Rectangle *object){
+	// Buffer for Vertices
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 18, &vertexData[0], GL_STATIC_DRAW);
+
+	// Buffer for Colours
+	glm::vec3 colour[] = { object->getColour(), object->getColour(), object->getColour(), object->getColour(), object->getColour(), object->getColour() };
+	glBindBuffer(GL_ARRAY_BUFFER, colourBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * 6, colour, GL_STATIC_DRAW);
 }
 
 static void VAOcleanup(){
@@ -89,11 +97,11 @@ static void reloadMVPUniform(Rectangle *object){
 	// Get a handle for our "MVP" uniform.
 	// Only at initialisation time.
 	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
-
+	glUseProgram(programID);
 	// Send our transformation to the currently bound shader,
 	// in the "MVP" uniform
 	// For each model you render, since the MVP will be different (at least the M part)
-	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &object->getModel()[0][0]);
+	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &(object->getModel()[0][0]));
 }
 
 // You can easily configure which button does which movement by adding cases to input.h
@@ -109,12 +117,14 @@ static void processKeyPresses(){
 					player.setdY(10);
 					if (debug){
 						fprintf(stderr, "Player 1 Y: %f\nPlayer 2 Y: %f\n\n", players[0].getY(), players[1].getY());
+						fprintf(stderr, "Player 1 NDC Y: %f\nPlayer 2 NDC Y: %f\n\n", (players[0].getY() / (W_HEIGHT * 0.5)) - 1, (players[1].getY() / (W_HEIGHT * 0.5)) - 1);
 					}
 					break;
 				case MOVE_DOWN:
 					player.setdY(-10);
 					if (debug){
 						fprintf(stderr, "Player 1 Y: %f\nPlayer 2 Y: %f\n\n", players[0].getY(), players[1].getY());
+						fprintf(stderr, "Player 1 NDC Y: %f\nPlayer 2 NDC Y: %f\n\n", (players[0].getY() / (W_HEIGHT * 0.5)) - 1, (players[1].getY() / (W_HEIGHT * 0.5)) - 1);
 					}
 					break;
 				case MOVE_LEFT:
@@ -152,10 +162,6 @@ int main(void)
 	// Open a window
 	window = glfwCreateWindow(W_WIDTH, W_HEIGHT, "Modern OpenGL", NULL, NULL);
 
-	// TODO: Find a way to do this without using magic numbers. 
-	W_HEIGHT_NO_BORDER = W_HEIGHT - 25;
-	W_WIDTH_NO_BORDER = W_WIDTH - 25;
-
 	if (!window)
 	{
 		fprintf(stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
@@ -181,9 +187,10 @@ int main(void)
 
 	// Dark blue background
 	glClearColor(0.0f, 0.0f, 0.3f, 0.0f);
+	glEnable(GL_DEPTH_TEST);
 
 	generateVAOs();
-	bindVAOs();
+	setupVAOs();
 
 
 	do{
@@ -193,41 +200,47 @@ int main(void)
 
 		processKeyPresses();
 
+
+		glBindVertexArray(VertexArrayID);
 		// Use our shader
 		glUseProgram(programID);
-
+		
 		// render the players
 		for (Player &player : players){
+			
+			// Not actually using VAO's right now. FIX THIS.
+			bindVAOs(&player);
+
 			reloadMVPUniform(&player);
 
-			// Not actually using VAO's right now. FIX THIS.
-			setupVAOs();
-
+			if (debug){
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			}
+			else{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			}
 			// Draw the triangles!
 			glDrawArrays(GL_TRIANGLES, 0, 2 * 3); // 2*(3 indices starting at 0) -> 2 triangles = square
-
-			glDisableVertexAttribArray(0);
 		}
 
 		// render the balls
 		for (Ball &ball : balls){
+
+			ball.move();
+			
 			/*TODO: MOVE THIS INTO DATABASE ONCE YOU MOVE ALL THE OBJECTS INTO THERE!*/
 			for (Player &player : players){
 				Database::collide(&ball, &player);
 			}
-
 			/*************************************************************************/
-			ball.move();
+
+			// Not actually using VAO's right now. FIX THIS.
+			bindVAOs(&ball);
 
 			reloadMVPUniform(&ball);
 
-			// Not actually using VAO's right now. FIX THIS.
-			setupVAOs();
-
 			// Draw the triangles!
 			glDrawArrays(GL_TRIANGLES, 0, 2 * 3); // 2*(3 indices starting at 0) -> 2 triangles = square
-
-			glDisableVertexAttribArray(0);
 		}
 		
 		// Swap buffers

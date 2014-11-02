@@ -44,11 +44,11 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Program Files\Programming\External Libraries\GLFW\glfw-3.0.4.bin.WIN32\glfw-3.0.4.bin.WIN32\include;C:\Program Files\Programming\External Libraries\GLEW\glew-1.11.0-win32\glew-1.11.0\include;C:\Program Files\Programming\External Libraries\GLM\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>External\glfw-3.0.4.bin.WIN32\include;External\glew-1.11.0\include;External\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glu32.lib;opengl32.lib;C:\Program Files\Programming\External Libraries\GLEW\glew-1.11.0-win32\glew-1.11.0\lib\Release\Win32\glew32.lib;C:\Program Files\Programming\External Libraries\GLFW\glfw-3.0.4.bin.WIN32\glfw-3.0.4.bin.WIN32\lib-msvc120\glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glu32.lib;opengl32.lib;External\glew-1.11.0\lib\Release\Win32\glew32.lib;External\glfw-3.0.4.bin.WIN32\lib-msvc120\glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

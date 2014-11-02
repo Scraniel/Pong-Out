@@ -2,7 +2,11 @@
 
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec3 vert_colour;
+
 uniform mat4 MVP;
+
+out vec3 interpolate_colour;
 
 void main(){
 
@@ -10,5 +14,5 @@ void main(){
 
     gl_Position = MVP * v;
 
-
+	interpolate_colour = vert_colour;
 }

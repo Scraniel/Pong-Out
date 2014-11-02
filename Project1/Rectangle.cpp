@@ -1,16 +1,18 @@
 #include "Rectangle.h"
+#include <stdio.h>
 
-Rectangle::Rectangle(float x, float y, float width, float height){
+Rectangle::Rectangle(float x, float y, float width, float height, glm::vec3 colour){
 	this->x = x;
 	this->y = y;
 	this->width = width;
 	this->height = height;
 	this->dx = 0;
 	this->dy = 0;
+	this->colour = colour;
 
 	// need to implement scaling based on width and height
 	glm::mat4 scale = glm::scale(glm::vec3(width / W_WIDTH, height / W_HEIGHT, 0.0));
-	glm::mat4 translate = glm::translate(glm::vec3(x / (W_WIDTH * 0.5), y / (W_HEIGHT * 0.5), 0.0));
+	glm::mat4 translate = glm::translate(glm::vec3((x / (W_WIDTH * 0.5)) - 1, (y / (W_HEIGHT * 0.5)) - 1, 0.0));
 	glm::mat4 rotate = glm::mat4(); // identity matrix for now
 	
 	this->model = translate * rotate * scale;
@@ -40,7 +42,7 @@ void Rectangle::setX(float x){
 	// Each of these matrices probably isn't necessary. Just need to figure out which locations to
 	// set in the matrix
 	glm::mat4 scale = glm::scale(glm::vec3(width / W_WIDTH, height / W_HEIGHT, 0.0));
-	glm::mat4 translate = glm::translate(glm::vec3(x / (W_WIDTH * 0.5), y / (W_HEIGHT * 0.5), 0.0));
+	glm::mat4 translate = glm::translate(glm::vec3((x / (W_WIDTH * 0.5)) - 1, (y / (W_HEIGHT * 0.5)) - 1, 0.0));
 	glm::mat4 rotate = glm::mat4(); // identity matrix for now
 
 	this->model = translate * rotate * scale;
@@ -51,7 +53,7 @@ void Rectangle::setY(float y){
 	// Each of these matrices probably isn't necessary. Just need to figure out which locations to
 	// set in the matrix.
 	glm::mat4 scale = glm::scale(glm::vec3(width / W_WIDTH, height / W_HEIGHT, 0.0));
-	glm::mat4 translate = glm::translate(glm::vec3(x / (W_WIDTH * 0.5), y / (W_HEIGHT * 0.5), 0.0));
+	glm::mat4 translate = glm::translate(glm::vec3((x / (W_WIDTH * 0.5)) - 1, (y / (W_HEIGHT * 0.5)) - 1, 0.0));
 	glm::mat4 rotate = glm::mat4(); // identity matrix for now
 
 	this->model = translate * rotate * scale;
@@ -87,4 +89,12 @@ float Rectangle::getdX(){
 
 float Rectangle::getdY(){
 	return this->dy;
+}
+
+glm::vec3 Rectangle::getColour(){
+	return this->colour;
+}
+
+void Rectangle::setColour(glm::vec3 colour){
+	this->colour = colour;
 }

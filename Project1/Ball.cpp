@@ -4,9 +4,10 @@
 #include "Ball.h"
 
 
-Ball::Ball(float x, float y, float width, float height, Player * attachedTo) : Rectangle(x, y, width, height){
-	this->dx = 10;
-	this->dy = 8;
+Ball::Ball(float x, float y, float width, float height, glm::vec3 colour, Player * attachedTo) : Rectangle(x, y, width, height, colour){
+	this->dx = 8;
+	this->dy = 6;
+	this->attached = true;
 	this->lastHit = attachedTo;
 }
 
@@ -17,24 +18,24 @@ void Ball::move(){
 
 	newY = this->y + this->dy;
 
-	// This is sort of hacky. For some reason
-	if (newY > (W_HEIGHT - height) / 2.0){
-		newY = (W_HEIGHT - height) / 2.0;
+	// This is sort of hacky
+	if (newY > W_HEIGHT){
+		newY = W_HEIGHT;
 		dy = -dy;
 	}
-	else if (newY < ((W_HEIGHT - height) / 2.0)*(-1.0)){
-		newY = ((W_HEIGHT - height) / 2.0)*(-1.0);
+	else if (newY - this->height < 0){
+		newY = this->height;
 		dy = -dy;
 	}
 	this->setY(newY);
 
 	newX = this->x + this->dx;
-	if (newX >(W_WIDTH - height) / 2.0){
-		newX = (W_WIDTH - height) / 2.0;
+	if (newX + this->width > W_WIDTH){
+		newX = W_WIDTH - this->width;
 		dx = -dx;
 	}
-	else if (newX < ((W_WIDTH - height) / 2.0)*(-1.0)){
-		newX = ((W_WIDTH - height) / 2.0)*(-1.0);
+	else if (newX < 0){
+		newX = 0;
 		dx = -dx;
 	}
 	this->setX(newX);

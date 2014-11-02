@@ -9,7 +9,7 @@ class Ball : public Rectangle {
 	bool moveUp, moveDown, moveLeft, moveRight, attached;
 	Player * lastHit;
 public:
-	Ball(float, float, float, float, Player *);
+	Ball(float, float, float, float, glm::vec3 colour, Player *);
 	// Consider moving this up to Rectangle if the ball class inherits from it.
 	// Alternatively, create another parent class that deals with movement, and
 	// have both the ball and player inherit it. This way we can place the move
