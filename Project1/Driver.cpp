@@ -1,13 +1,17 @@
 /*
-*TODO: Make a 'in game object' parent class to use for player, ball, bricks, powerups, etc. It may end up replacing the rectangle class.
-*      It will contain information about sprites, state, etc. 
+*TODO: 
+*   1. Make a 'in game object' parent class to use for bricks, powerups, etc.
+*      It will contain information about sprites, state, etc.
+*   2. Create a fileformat to allow for easily imputted levels
 */
 #include "Input.h"
 #include "Player.h"
 #include "Ball.h"
+#include "Brick.h"
 #include "Database.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <list>
 class Ball;
 
 GLFWwindow* window;
@@ -16,8 +20,14 @@ GLuint programID;
 GLuint vertexbuffer;
 GLuint colourBuffer;
 short W_HEIGHT_NO_BORDER, W_WIDTH_NO_BORDER;
-Player players[] = { Player(100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, BLUE, KEY_W, KEY_S, KEY_A, KEY_D, NULL), Player(W_WIDTH - 100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, RED, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, NULL) };
-Ball balls[] = { Ball(300.0f, 0.0f, 25.0f, 25.0f, players[0].getColour(), &players[0]), Ball(500.0f, 0.0f, 25.0f, 25.0f, players[1].getColour(), &players[1]) };
+
+// These will eventually be moved to the Database class
+Player players[] = { Player(100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, BLUE, KEY_W, KEY_S, KEY_A, KEY_D, SPACEBAR, 1, NULL), Player(W_WIDTH - 100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, RED, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, R_CTRL, 2, NULL) };
+// Consider making a vector
+Ball balls[] = { Ball(players[0].getX() + players[0].getWidth(), players[0].getY() - (players[0].getHeight() / 2.0) + 12.5, 25.0f, 25.0f, players[0].getColour(), &players[0]), Ball(players[1].getX() - players[1].getWidth(), players[1].getY() - (players[1].getHeight() / 2.0) + 12.5, 25.0f, 25.0f, players[1].getColour(), &players[1]) };
+// Making a linked list so arbitrary element deletion is efficient
+std::list<Brick> bricks;
+
 
 // Working on -1 -> 1 with x and y
 GLfloat vertexData[] = {
@@ -109,36 +119,53 @@ static void reloadMVPUniform(Rectangle *object){
 // you want. 
 static void processKeyPresses(){
 	for (Player &player : players){
+		Ball * ball = player.getBall();
 		short * movementKeys = player.getMovementKeys();
-		for (int i = 0; i < MOVE_KEYS_NUMBER; i++){
+		for (int i = 0; i < KEYS_NUMBER; i++){
 			if (keysPressed[movementKeys[i]]){
 				switch (i){
 				case MOVE_UP:
-					player.setdY(10);
-					if (debug){
-						fprintf(stderr, "Player 1 Y: %f\nPlayer 2 Y: %f\n\n", players[0].getY(), players[1].getY());
-						fprintf(stderr, "Player 1 NDC Y: %f\nPlayer 2 NDC Y: %f\n\n", (players[0].getY() / (W_HEIGHT * 0.5)) - 1, (players[1].getY() / (W_HEIGHT * 0.5)) - 1);
-					}
+					player.setdY(15);
+					
 					break;
 				case MOVE_DOWN:
-					player.setdY(-10);
-					if (debug){
-						fprintf(stderr, "Player 1 Y: %f\nPlayer 2 Y: %f\n\n", players[0].getY(), players[1].getY());
-						fprintf(stderr, "Player 1 NDC Y: %f\nPlayer 2 NDC Y: %f\n\n", (players[0].getY() / (W_HEIGHT * 0.5)) - 1, (players[1].getY() / (W_HEIGHT * 0.5)) - 1);
-					}
+					player.setdY(-15);
 					break;
 				case MOVE_LEFT:
-					// In pong-out, you can only move up and down!
+					if (debug){
+						fprintf(stderr, "Player 1 Y: %f\nPlayer 2 Y: %f\n\n", players[0].getY(), players[1].getY());
+						fprintf(stderr, "Player 1 Score: %d\nPlayer 2 Score: %d\n\n", players[0].getScore(), players[1].getScore());
+					}
 					break;
 				case MOVE_RIGHT:
 					// In pong-out, you can only move up and down!
 					break;
+				case LAUNCH_BALL:
+					if (ball){
+						ball = player.popBall();
+						ball->setAttached(false);
+						if (player.getId() == 2){
+							ball->setdX(-BALL_START_DX);
+						}
+						else{
+							ball->setdX(BALL_START_DX);
+						}
+						ball->setdY(BALL_START_DY);
+					}	
+					keysPressed[movementKeys[i]] = false;
+					break;
 				}
 			}
 		}
-
 		player.move();
 	}
+}
+
+void renderRectangle(Rectangle * object){
+	bindVAOs(object);
+	reloadMVPUniform(object);
+	// Draw the triangles!
+	glDrawArrays(GL_TRIANGLES, 0, 2 * 3); // 2*(3 indices starting at 0) -> 2 triangles = square
 }
 
 int main(void)
@@ -160,7 +187,7 @@ int main(void)
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 	// Open a window
-	window = glfwCreateWindow(W_WIDTH, W_HEIGHT, "Modern OpenGL", NULL, NULL);
+	window = glfwCreateWindow(W_WIDTH, W_HEIGHT, "Danny is cool", NULL, NULL);
 
 	if (!window)
 	{
@@ -192,6 +219,23 @@ int main(void)
 	generateVAOs();
 	setupVAOs();
 
+	// Set balls to be attached to players
+	players[0].setBall(&balls[0]);
+	players[1].setBall(&balls[1]);
+
+	/*
+	 * This should be moved into the input class so that levels can be specified
+	 * via a level file
+	 */
+	// Create bricks
+	for (int i = 0; i < 14; i++){
+		bricks.push_back(Brick( (2*W_WIDTH) / 5.0, W_HEIGHT - i*BRICK_HEIGHT, BRICK_WIDTH, BRICK_HEIGHT, GREEN, false, 1));
+	}
+	
+	for (int i = 0; i < 14; i++){
+		bricks.push_back(Brick( (3*W_WIDTH) / 5.0, W_HEIGHT - i*BRICK_HEIGHT, BRICK_WIDTH, BRICK_HEIGHT, GREEN, false, 1));
+	}
+
 
 	do{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -207,20 +251,13 @@ int main(void)
 		
 		// render the players
 		for (Player &player : players){
-			
-			// Not actually using VAO's right now. FIX THIS.
-			bindVAOs(&player);
-
-			reloadMVPUniform(&player);
-
 			if (debug){
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
 			else{
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			}
-			// Draw the triangles!
-			glDrawArrays(GL_TRIANGLES, 0, 2 * 3); // 2*(3 indices starting at 0) -> 2 triangles = square
+			renderRectangle(&player);
 		}
 
 		// render the balls
@@ -230,17 +267,38 @@ int main(void)
 			
 			/*TODO: MOVE THIS INTO DATABASE ONCE YOU MOVE ALL THE OBJECTS INTO THERE!*/
 			for (Player &player : players){
-				Database::collide(&ball, &player);
+				if (Database::collide(&ball, &player) && !ball.isAttached()){
+					ball.collide(&player);
+				}
 			}
 			/*************************************************************************/
 
-			// Not actually using VAO's right now. FIX THIS.
-			bindVAOs(&ball);
+			renderRectangle(&ball);
+		}
+		// render the bricks
+		// Have to use this weird iterator while loop because of how the list class works
+		// (eg. list.erase returns the next element, so we need a guard at the end to see
+		// if the iterator has overstepped the bounds of the bricks list)
+		std::list<Brick>::iterator iterator = bricks.begin();
+		while (iterator != bricks.end()){
+			bool collision = false;
 
-			reloadMVPUniform(&ball);
-
-			// Draw the triangles!
-			glDrawArrays(GL_TRIANGLES, 0, 2 * 3); // 2*(3 indices starting at 0) -> 2 triangles = square
+			/*TODO: MOVE THIS INTO DATABASE ONCE YOU MOVE ALL THE OBJECTS INTO THERE!*/
+			for (Ball &ball : balls){
+				if (Database::collide(&ball, &(*iterator)) && !ball.isAttached()){
+					collision = true;
+					ball.collide(&(*iterator));
+					iterator = bricks.erase(iterator);
+					break;
+				}
+				else{
+					renderRectangle(&(*iterator));
+				}
+			}
+			/*************************************************************************/
+			if (iterator != bricks.end() && !collision){
+				iterator++;
+			}
 		}
 		
 		// Swap buffers
@@ -248,7 +306,7 @@ int main(void)
 
 	} // Check if the ESC key was pressed or the window was closed
 	while (!glfwWindowShouldClose(window));
-	fprintf(stderr, "%d\n%d\n", players[0].getY(), players[1].getY());
+
 	VAOcleanup();
 	// Close OpenGL window and terminate GLFW
 	glfwTerminate();

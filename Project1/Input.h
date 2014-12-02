@@ -4,7 +4,7 @@
 #include "stdglincludes.h"
 #include "Constants.h"
 
-bool keysPressed[8];
+bool keysPressed[10];
 bool debug = false;
 // callback function for pressing keys. Right now, it sets the respective locations in an
 // array that gets checked every time in the main loop. This way, we can set keys in the
@@ -17,33 +17,8 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
 
-	// Player 1
-	if (key == GLFW_KEY_UP && (action == GLFW_PRESS)){
-		keysPressed[KEY_UP] = true;
-	}
-	if (key == GLFW_KEY_DOWN && (action == GLFW_PRESS)){
-		keysPressed[KEY_DOWN] = true;
-	}
-	if (key == GLFW_KEY_RIGHT && (action == GLFW_PRESS)){
-		keysPressed[KEY_RIGHT] = true;
-	}
-	if (key == GLFW_KEY_LEFT && (action == GLFW_PRESS)){
-		keysPressed[KEY_LEFT] = true;
-	}
-	if (key == GLFW_KEY_UP && (action == GLFW_RELEASE)){
-		keysPressed[KEY_UP] = false;
-	}
-	if (key == GLFW_KEY_DOWN && (action == GLFW_RELEASE)){
-		keysPressed[KEY_DOWN] = false;
-	}
-	if (key == GLFW_KEY_RIGHT && (action == GLFW_RELEASE)){
-		keysPressed[KEY_RIGHT] = false;
-	}
-	if (key == GLFW_KEY_LEFT && (action == GLFW_RELEASE)){
-		keysPressed[KEY_LEFT] = false;
-	}
-
-	// player 2
+	// Player 1 (For now. eventually, input will just set the boolean for every key on the keyboard,
+	// and the driver will decide which ones to check)
 	if (key == GLFW_KEY_W && (action == GLFW_PRESS)){
 		keysPressed[KEY_W] = true;
 	}
@@ -56,6 +31,9 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	if (key == GLFW_KEY_A && (action == GLFW_PRESS)){
 		keysPressed[KEY_A] = true;
 	}
+	if (key == GLFW_KEY_SPACE && (action == GLFW_PRESS)){
+		keysPressed[SPACEBAR] = true;
+	}
 	if (key == GLFW_KEY_W && (action == GLFW_RELEASE)){
 		keysPressed[KEY_W] = false;
 	}
@@ -67,6 +45,35 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	}
 	if (key == GLFW_KEY_A && (action == GLFW_RELEASE)){
 		keysPressed[KEY_A] = false;
+	}
+
+	// player 2
+	if (key == GLFW_KEY_UP && (action == GLFW_PRESS)){
+		keysPressed[KEY_UP] = true;
+	}
+	if (key == GLFW_KEY_DOWN && (action == GLFW_PRESS)){
+		keysPressed[KEY_DOWN] = true;
+	}
+	if (key == GLFW_KEY_RIGHT && (action == GLFW_PRESS)){
+		keysPressed[KEY_RIGHT] = true;
+	}
+	if (key == GLFW_KEY_LEFT && (action == GLFW_PRESS)){
+		keysPressed[KEY_LEFT] = true;
+	}
+	if (key == GLFW_KEY_RIGHT_CONTROL && (action == GLFW_PRESS)){
+		keysPressed[R_CTRL] = true;
+	}
+	if (key == GLFW_KEY_UP && (action == GLFW_RELEASE)){
+		keysPressed[KEY_UP] = false;
+	}
+	if (key == GLFW_KEY_DOWN && (action == GLFW_RELEASE)){
+		keysPressed[KEY_DOWN] = false;
+	}
+	if (key == GLFW_KEY_RIGHT && (action == GLFW_RELEASE)){
+		keysPressed[KEY_RIGHT] = false;
+	}
+	if (key == GLFW_KEY_LEFT && (action == GLFW_RELEASE)){
+		keysPressed[KEY_LEFT] = false;
 	}
 
 	// Debugging

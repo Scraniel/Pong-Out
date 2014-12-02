@@ -9,6 +9,10 @@ Rectangle::Rectangle(float x, float y, float width, float height, glm::vec3 colo
 	this->dx = 0;
 	this->dy = 0;
 	this->colour = colour;
+	this->hitBottom = false;
+	this->hitTop = false;
+	this->hitLeft = false;
+	this->hitRight = false;
 
 	// need to implement scaling based on width and height
 	glm::mat4 scale = glm::scale(glm::vec3(width / W_WIDTH, height / W_HEIGHT, 0.0));
@@ -97,4 +101,41 @@ glm::vec3 Rectangle::getColour(){
 
 void Rectangle::setColour(glm::vec3 colour){
 	this->colour = colour;
+}
+
+// Determines which side of the rectangle was hit, then sets the 'hit'
+// flags in the rectangle. 
+void Rectangle::collide(Rectangle * object){
+	float xDirection, yDirection;
+	float ballCenterX = (this->getX() + (this->getWidth() / 2.0));
+	float playerCenterX = (object->getX() + (object->getWidth() / 2.0));
+	float ballCenterY = (this->getY() - (this->getHeight() / 2.0));
+	float playerCenterY = (object->getY() - (object->getHeight() / 2.0));
+
+	// Minkowski sum. Helps determine which side the collision happened on. 
+	float w = 0.5 * (this->getWidth() + object->getWidth());
+	float h = 0.5 * (this->getHeight() + object->getHeight());
+	float dx = ballCenterX - playerCenterX;
+	float dy = ballCenterY - playerCenterY;
+	float wy = w * dy;
+	float hx = h * dx;
+
+	if ((wy > hx) && (wy > -hx)){
+		/* collision at the top */
+		this->hitTop = true;
+	}
+	else if (!(wy > hx) && !(wy > -hx)){
+		/* at the bottom */
+		this->hitBottom = true;
+	}
+	else if ((wy > hx) && !(wy > -hx)){
+		/* on the left */
+		this->hitLeft = true;
+	}
+	
+	else if(!(wy > hx) && (wy > -hx)){
+		/* on the right */
+		this->hitRight = true;
+	}
+	
 }

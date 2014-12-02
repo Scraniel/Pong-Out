@@ -4,15 +4,14 @@
 #include "Rectangle.h"
 class Ball;
 
-
 // x and y coordinates are for the top left corner
 class Player : public Rectangle {
-	short movementKeys[4];
+	short movementKeys[5], id;
 	bool moveUp, moveDown, moveLeft, moveRight;
-	Ball * ball;
+	Ball * ball[2];
 	int score;
 public:
-	Player(float, float, float, float, glm::vec3 colour, short, short, short, short, Ball *);
+	Player(float, float, float, float, glm::vec3 colour, short, short, short, short, short, short, Ball *);
 	Player();
 	// Consider moving this up to Rectangle if the ball class inherits from it.
 	// Alternatively, create another parent class that deals with movement, and
@@ -21,6 +20,13 @@ public:
 	void move();
 	void setMovementKeys(short, short, short, short);
 	short* getMovementKeys();
+	short getId();
+	void incScore();
+	void decScore();
+	short getScore();
+	Ball * getBall();
+	void setBall(Ball *);
+	Ball * popBall();
 };
 
 #endif

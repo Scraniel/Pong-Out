@@ -1,4 +1,5 @@
 #include "Database.h"
+#include "Ball.h"
 // This class will eventually hold all of the object information. All other
 // classes that need to access these objects will query the Database. For 
 // right now, all it holds is the 'Collide' function.
@@ -10,30 +11,26 @@
 * what happens. This way, this function can be called in the main for everything,
 * and all the different cases (ie. ball hitting ball, ball hitting paddle, ball
 * hitting brick) will all be accounted for. 
+* 
+* TODO: make a 'In game object' class that is inherited by ball and powerup.
 */
-void Database::collide(Rectangle * one, Rectangle * two){
+bool Database::collide(Ball * one, Rectangle * two){
 	// One is to the left of two
 	if (one->getX() + one->getWidth() < two->getX()){
-		return;
+		return false;
 	}
 	// One is to the right of two
 	if (one->getX() > two->getX() + two->getWidth()){
-		return;
+		return false;
 	}
 	// One is above two
 	if (one->getY() - one->getHeight() > two->getY()){
-		return;
+		return false;
 	}
 	// One is below two
 	if (one->getY() < two->getY() - two->getHeight()){
-		return;
-	}
-	// If the ball is moving down and on the top half or up and on the bottom half, switch direction of y
-	if ((one->getY() > two->getY() - (two->getHeight() / 2)) && one->getdY() < 0){
-		one->setdY( -one->getdY());
+		return false;
 	}
 	
-
-	one->setdX(-one->getdX());
-	one->setColour(two->getColour());
+	return true;
 }

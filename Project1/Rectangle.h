@@ -10,8 +10,10 @@ extern short W_HEIGHT_NO_BORDER;
 
 
 // x and y coordinates are for the top left corner
+// Should hold sprite info in here as well
 class Rectangle {
 protected:
+	bool hitTop, hitBottom, hitLeft, hitRight;
 	float width, height, x, y, dx, dy;
 	glm::mat4 model;
 	glm::vec3 colour;
@@ -34,6 +36,8 @@ public:
 	glm::mat4 getModel();
 	glm::vec3 getColour();
 	void Rectangle::setColour(glm::vec3);
+	virtual void collide(Rectangle*);
 
 };
+
 #endif
