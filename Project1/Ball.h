@@ -19,7 +19,9 @@ public:
 	// function, dx, dy, and all the move booleans there as well. 
 	void move();
 	void setLastHit(Player *);
+	// collide override for players
 	void collide(Player *);
+	// collide override for bricks
 	void collide(Brick *);
 	void setAttached(bool);
 	bool isAttached();

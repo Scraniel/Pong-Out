@@ -9,17 +9,11 @@
 #include "Ball.h"
 #include "Brick.h"
 #include "Database.h"
+#include "GLTools.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <list>
 class Ball;
-
-GLFWwindow* window;
-GLuint VertexArrayID;
-GLuint programID;
-GLuint vertexbuffer;
-GLuint colourBuffer;
-short W_HEIGHT_NO_BORDER, W_WIDTH_NO_BORDER;
 
 // These will eventually be moved to the Database class
 Player players[] = { Player(100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, BLUE, KEY_W, KEY_S, KEY_A, KEY_D, SPACEBAR, 1, NULL), Player(W_WIDTH - 100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, RED, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, R_CTRL, 2, NULL) };
@@ -28,99 +22,29 @@ Ball balls[] = { Ball(players[0].getX() + players[0].getWidth(), players[0].getY
 // Making a linked list so arbitrary element deletion is efficient
 std::list<Brick> bricks;
 
-
-// Working on -1 -> 1 with x and y
-GLfloat vertexData[] = {
-	0.0f, 0.0f, 0.0f,
-	2.0f, 0.0f, 0.0f,
-	0.0f, -2.0f, 0.0f,
-	0.0f, -2.0f, 0.0f,
-	2.0f, 0.0f, 0.0f,
-	2.0f, -2.0f, 0.0f
-};
-
-/*
-* Creates VAO's
-*/
-static void generateVAOs(){
-
-	// Creating and binding Vertex Array Object (VAO)
-	glGenVertexArrays(1, &VertexArrayID);
-	glGenBuffers(1, &vertexbuffer);
-	glGenBuffers(1, &colourBuffer);
-
-	// Create and compile our GLSL program from the shaders
-	programID = LoadShaders("vertexShader.glsl", "fragmentShader.glsl");
-}
-
-static void setupVAOs(){
-	glBindVertexArray(VertexArrayID);
-
-	// 1st attribute buffer : vertices
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glVertexAttribPointer(
-		0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-		3,                  // size
-		GL_FLOAT,           // type
-		GL_FALSE,           // normalized?
-		0,                  // stride
-		(void*)0            // array buffer offset
-		);
-	glEnableVertexAttribArray(1); // match layout # in shader
-
-	// 2nd attribute buffer : colour NOT WORKING YET
-	glBindBuffer(GL_ARRAY_BUFFER, colourBuffer);
-	glVertexAttribPointer(
-		1,		// attribute layout # above
-		3,		// # of components (ie XYZ )
-		GL_FLOAT,	// type of components
-		GL_FALSE,	// need to be normalized?
-		0,		// stride
-		(void*)0	// array buffer offset
-		);
-
-	glBindVertexArray(0);
-}
-
-// This function may need to change if something is required to be rendered as something different than a rectangle
-static void bindVAOs(Rectangle *object){
-	// Buffer for Vertices
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 18, &vertexData[0], GL_STATIC_DRAW);
-
-	// Buffer for Colours
-	glm::vec3 colour[] = { object->getColour(), object->getColour(), object->getColour(), object->getColour(), object->getColour(), object->getColour() };
-	glBindBuffer(GL_ARRAY_BUFFER, colourBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * 6, colour, GL_STATIC_DRAW);
-}
-
-static void VAOcleanup(){
-	// Cleanup VAO's and buffers
-	glDeleteBuffers(1, &vertexbuffer);
-	glDeleteBuffers(1, &colourBuffer);
-	glDeleteVertexArrays(1, &VertexArrayID);
-	glDeleteProgram(programID);
-}
-
-static void reloadMVPUniform(Rectangle *object){
-	// Get a handle for our "MVP" uniform.
-	// Only at initialisation time.
-	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
-	glUseProgram(programID);
-	// Send our transformation to the currently bound shader,
-	// in the "MVP" uniform
-	// For each model you render, since the MVP will be different (at least the M part)
-	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &(object->getModel()[0][0]));
-}
-
 // You can easily configure which button does which movement by adding cases to input.h
 // and then adding that button to 'player.movementKeys[MOVE_UP]' or whatever direction
 // you want. 
+//
+// I imagine this could be done a little more efficiently using listeners insetad of polling.
 static void processKeyPresses(){
 	for (Player &player : players){
 		Ball * ball = player.getBall();
 		short * movementKeys = player.getMovementKeys();
+		// keysPressed is an array that (eventually) contains every key on the keyboard
+		// and possibly gamepad. When an element in keysPressed is true (ie. KEY_W, which
+		// corresponds to 0 in the array), that key is being pressed. movementKeys (think
+		// about renaming to actionKeys or something) is an array in each player that has
+		// the various keys that player uses stored. They are set up like this:
+		//
+		// movementKeys[0] = MOVE_UP key
+		// movementKeys[1] = MOVE_DOWN key
+		// movementKeys[2] = MOVE_LEFT key
+		// movementKeys[3] = MOVE_RIGHT key
+		// movementKeys[4] = LAUNCH_BALL key
+		//
+		// So for each key on they keyboard / gamepad, if the player has that key set as 
+		// an action key and is currently pressing that key, it does that action.
 		for (int i = 0; i < KEYS_NUMBER; i++){
 			if (keysPressed[movementKeys[i]]){
 				switch (i){
@@ -161,63 +85,14 @@ static void processKeyPresses(){
 	}
 }
 
-void renderRectangle(Rectangle * object){
-	bindVAOs(object);
-	reloadMVPUniform(object);
-	// Draw the triangles!
-	glDrawArrays(GL_TRIANGLES, 0, 2 * 3); // 2*(3 indices starting at 0) -> 2 triangles = square
-}
-
 int main(void)
 {
 
-	// Initialise GLFW
-	if (!glfwInit())
-	{
-		fprintf(stderr, "Failed to initialize GLFW\n");
+	if (GLTools::GLFWInit(key_callback) < 0){
 		return -1;
 	}
 
-	// Set up window hints
-	glfwWindowHint(GLFW_SAMPLES, 4);
-	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
-	// Open a window
-	window = glfwCreateWindow(W_WIDTH, W_HEIGHT, "Danny is cool", NULL, NULL);
-
-	if (!window)
-	{
-		fprintf(stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
-		glfwTerminate();
-		return -1;
-	}
-
-	// Create our window's OpenGL context
-	glfwMakeContextCurrent(window);
-
-	// Initialize GLEW
-	// GLEW requires this for OpenGL >= 3.3
-	glewExperimental = GL_TRUE;
-
-	if (glewInit() != GLEW_OK) {
-		fprintf(stderr, "Failed to initialize GLEW, Error Code:\n");
-		return -1;
-	}
-
-	// Ensure we can capture the escape key being pressed below
-	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_FALSE);
-	glfwSetKeyCallback(window, key_callback);
-
-	// Dark blue background
-	glClearColor(0.0f, 0.0f, 0.3f, 0.0f);
-	glEnable(GL_DEPTH_TEST);
-
-	generateVAOs();
-	setupVAOs();
+	GLTools::GLInit();
 
 	// Set balls to be attached to players
 	players[0].setBall(&balls[0]);
@@ -244,10 +119,7 @@ int main(void)
 
 		processKeyPresses();
 
-
-		glBindVertexArray(VertexArrayID);
-		// Use our shader
-		glUseProgram(programID);
+		GLTools::enableVAO();
 		
 		// render the players
 		for (Player &player : players){
@@ -257,7 +129,7 @@ int main(void)
 			else{
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			}
-			renderRectangle(&player);
+			GLTools::renderRectangle(&player);
 		}
 
 		// render the balls
@@ -273,7 +145,7 @@ int main(void)
 			}
 			/*************************************************************************/
 
-			renderRectangle(&ball);
+			GLTools::renderRectangle(&ball);
 		}
 		// render the bricks
 		// Have to use this weird iterator while loop because of how the list class works
@@ -292,7 +164,7 @@ int main(void)
 					break;
 				}
 				else{
-					renderRectangle(&(*iterator));
+					GLTools::renderRectangle(&(*iterator));
 				}
 			}
 			/*************************************************************************/
@@ -302,12 +174,12 @@ int main(void)
 		}
 		
 		// Swap buffers
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(GLTools::window);
 
 	} // Check if the ESC key was pressed or the window was closed
-	while (!glfwWindowShouldClose(window));
+	while (!glfwWindowShouldClose(GLTools::window));
 
-	VAOcleanup();
+	GLTools::VAOcleanup();
 	// Close OpenGL window and terminate GLFW
 	glfwTerminate();
 

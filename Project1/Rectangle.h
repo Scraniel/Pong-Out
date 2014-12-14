@@ -36,6 +36,9 @@ public:
 	glm::mat4 getModel();
 	glm::vec3 getColour();
 	void Rectangle::setColour(glm::vec3);
+	// Generic, overridable collide function for rectangles. Basically just
+	// sets the correct 'hit' boolean value based on what side of the rectangle
+	// was hit.
 	virtual void collide(Rectangle*);
 
 };

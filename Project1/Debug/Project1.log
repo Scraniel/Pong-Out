@@ -1,22 +1,33 @@
-﻿Build started 28/11/2014 8:24:26 PM.
-     1>Project "C:\Users\nitomatik\Documents\Visual Studio 2013\Projects\Project1\Project1\Project1.vcxproj" on node 2 (Build target(s)).
+﻿Build started 13/12/2014 5:40:01 PM.
+     1>Project "D:\Program Files\Programming Stuff\C & C++\pong-out\Project1\Project1.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"External\glfw-3.0.4.bin.WIN32\include" /I"External\glew-1.11.0\include" /IExternal\glm /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Driver.cpp
+         D:\Program Files\Programming Stuff\Visual Studio 12.0\VC\bin\CL.exe /c /I"External\glfw-3.0.4.bin.WIN32\include" /I"External\glew-1.11.0\include" /IExternal\glm /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Ball.cpp Brick.cpp Database.cpp Driver.cpp GLTools.cpp Player.cpp Rectangle.cpp
          Driver.cpp
-     1>c:\users\nitomatik\documents\visual studio 2013\projects\project1\project1\driver.cpp(27): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\nitomatik\documents\visual studio 2013\projects\project1\project1\driver.cpp(232): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\nitomatik\documents\visual studio 2013\projects\project1\project1\driver.cpp(236): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>d:\program files\programming stuff\c & c++\pong-out\project1\driver.cpp(21): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+     1>d:\program files\programming stuff\c & c++\pong-out\project1\driver.cpp(107): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>d:\program files\programming stuff\c & c++\pong-out\project1\driver.cpp(111): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+         Generating Code...
+         Compiling...
+         GLTools.cpp
+         Generating Code...
+         Skipping... (no relevant changes detected)
+         Rectangle.cpp
+         Player.cpp
+         Database.cpp
+         Brick.cpp
+         Ball.cpp
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\nitomatik\Documents\Visual Studio 2013\Projects\Project1\Debug\Project1.exe" /INCREMENTAL /NOLOGO glu32.lib opengl32.lib "External\glew-1.11.0\lib\Release\Win32\glew32.lib" "External\glfw-3.0.4.bin.WIN32\lib-msvc120\glfw3dll.lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\nitomatik\Documents\Visual Studio 2013\Projects\Project1\Debug\Project1.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\nitomatik\Documents\Visual Studio 2013\Projects\Project1\Debug\Project1.lib" /MACHINE:X86 Debug\Ball.obj
+         D:\Program Files\Programming Stuff\Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Program Files\Programming Stuff\C & C++\pong-out\Debug\Project1.exe" /INCREMENTAL /NOLOGO glu32.lib opengl32.lib "External\glew-1.11.0\lib\Release\Win32\glew32.lib" "External\glfw-3.0.4.bin.WIN32\lib-msvc120\glfw3dll.lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\Program Files\Programming Stuff\C & C++\pong-out\Debug\Project1.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Program Files\Programming Stuff\C & C++\pong-out\Debug\Project1.lib" /MACHINE:X86 Debug\Ball.obj
          Debug\Brick.obj
          Debug\Database.obj
          Debug\Driver.obj
+         Debug\GLTools.obj
          Debug\Player.obj
          Debug\Rectangle.obj
          Debug\ShaderTools.obj
-         Project1.vcxproj -> C:\Users\nitomatik\Documents\Visual Studio 2013\Projects\Project1\Debug\Project1.exe
-     1>Done Building Project "C:\Users\nitomatik\Documents\Visual Studio 2013\Projects\Project1\Project1\Project1.vcxproj" (Build target(s)).
+         Project1.vcxproj -> D:\Program Files\Programming Stuff\C & C++\pong-out\Debug\Project1.exe
+     1>Done Building Project "D:\Program Files\Programming Stuff\C & C++\pong-out\Project1\Project1.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:01.22
+Time Elapsed 00:00:02.71
