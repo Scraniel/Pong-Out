@@ -10,6 +10,7 @@
 #include "Brick.h"
 #include "Database.h"
 #include "GLTools.h"
+#include "Menu.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <list>
@@ -21,6 +22,8 @@ Player players[] = { Player(100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, BLUE, 
 Ball balls[] = { Ball(players[0].getX() + players[0].getWidth(), players[0].getY() - (players[0].getHeight() / 2.0) + 12.5, 25.0f, 25.0f, players[0].getColour(), &players[0]), Ball(players[1].getX() - players[1].getWidth(), players[1].getY() - (players[1].getHeight() / 2.0) + 12.5, 25.0f, 25.0f, players[1].getColour(), &players[1]) };
 // Making a linked list so arbitrary element deletion is efficient
 std::list<Brick> bricks;
+// The main menu
+Menu menu;
 
 // You can easily configure which button does which movement by adding cases to input.h
 // and then adding that button to 'player.movementKeys[MOVE_UP]' or whatever direction
@@ -46,7 +49,7 @@ static void processKeyPresses(){
 		// So for each key on they keyboard / gamepad, if the player has that key set as 
 		// an action key and is currently pressing that key, it does that action.
 		for (int i = 0; i < KEYS_NUMBER; i++){
-			if (keysPressed[movementKeys[i]]){
+			if (Input::keysPressed[movementKeys[i]]){
 				switch (i){
 				case MOVE_UP:
 					player.setdY(15);
@@ -56,7 +59,7 @@ static void processKeyPresses(){
 					player.setdY(-15);
 					break;
 				case MOVE_LEFT:
-					if (debug){
+					if (Input::debug){
 						fprintf(stderr, "Player 1 Y: %f\nPlayer 2 Y: %f\n\n", players[0].getY(), players[1].getY());
 						fprintf(stderr, "Player 1 Score: %d\nPlayer 2 Score: %d\n\n", players[0].getScore(), players[1].getScore());
 					}
@@ -76,7 +79,7 @@ static void processKeyPresses(){
 						}
 						ball->setdY(BALL_START_DY);
 					}	
-					keysPressed[movementKeys[i]] = false;
+					Input::keysPressed[movementKeys[i]] = false;
 					break;
 				}
 			}
@@ -88,11 +91,22 @@ static void processKeyPresses(){
 int main(void)
 {
 
-	if (GLTools::GLFWInit(key_callback) < 0){
+	if (GLTools::GLFWInit(Input::key_callback) < 0){
 		return -1;
 	}
 
 	GLTools::GLInit();
+
+	// Show the menu before getting to the game
+	// Right now, single and two player modes enter single player mode
+	// idea: Keep ONE main loop; the only thing that changes when using
+	//       single player mode is how commands are inputted to player 2
+	menu = Menu();
+	if (menu.displayMenu() == -1){
+		GLTools::VAOcleanup();
+		glfwTerminate();
+		return 0;
+	}
 
 	// Set balls to be attached to players
 	players[0].setBall(&balls[0]);
@@ -123,7 +137,7 @@ int main(void)
 		
 		// render the players
 		for (Player &player : players){
-			if (debug){
+			if (Input::debug){
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
 			else{
@@ -144,6 +158,21 @@ int main(void)
 				}
 			}
 			/*************************************************************************/
+			/*TODO: MOVE THIS INTO DATABASE ONCE YOU MOVE ALL THE OBJECTS INTO THERE!*/
+			std::list<Brick>::iterator iterator = bricks.begin();
+			while (iterator != bricks.end()){
+				bool collision = false;
+
+				if (Database::collide(&ball, &(*iterator)) && !ball.isAttached()){
+					collision = true;
+					ball.collide(&(*iterator));
+					iterator = bricks.erase(iterator);
+				}
+				if (iterator != bricks.end() && !collision){
+					iterator++;
+				}
+			}
+			/*************************************************************************/
 
 			GLTools::renderRectangle(&ball);
 		}
@@ -153,24 +182,10 @@ int main(void)
 		// if the iterator has overstepped the bounds of the bricks list)
 		std::list<Brick>::iterator iterator = bricks.begin();
 		while (iterator != bricks.end()){
-			bool collision = false;
 
-			/*TODO: MOVE THIS INTO DATABASE ONCE YOU MOVE ALL THE OBJECTS INTO THERE!*/
-			for (Ball &ball : balls){
-				if (Database::collide(&ball, &(*iterator)) && !ball.isAttached()){
-					collision = true;
-					ball.collide(&(*iterator));
-					iterator = bricks.erase(iterator);
-					break;
-				}
-				else{
-					GLTools::renderRectangle(&(*iterator));
-				}
-			}
-			/*************************************************************************/
-			if (iterator != bricks.end() && !collision){
-				iterator++;
-			}
+			GLTools::renderRectangle(&(*iterator));
+
+			iterator++;
 		}
 		
 		// Swap buffers

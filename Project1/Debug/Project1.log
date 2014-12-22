@@ -1,33 +1,35 @@
-﻿Build started 13/12/2014 5:40:01 PM.
+﻿Build started 21/12/2014 6:16:49 PM.
      1>Project "D:\Program Files\Programming Stuff\C & C++\pong-out\Project1\Project1.vcxproj" on node 2 (Build target(s)).
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(388,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (Project1.vcxproj).  This can lead to incorrect clean and rebuild behavior.
      1>ClCompile:
-         D:\Program Files\Programming Stuff\Visual Studio 12.0\VC\bin\CL.exe /c /I"External\glfw-3.0.4.bin.WIN32\include" /I"External\glew-1.11.0\include" /IExternal\glm /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Ball.cpp Brick.cpp Database.cpp Driver.cpp GLTools.cpp Player.cpp Rectangle.cpp
-         Driver.cpp
-     1>d:\program files\programming stuff\c & c++\pong-out\project1\driver.cpp(21): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
-     1>d:\program files\programming stuff\c & c++\pong-out\project1\driver.cpp(107): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>d:\program files\programming stuff\c & c++\pong-out\project1\driver.cpp(111): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+         D:\Program Files\Programming Stuff\Visual Studio 12.0\VC\bin\CL.exe /c /I"External\glfw-3.0.4.bin.WIN32\include" /I"External\glew-1.11.0\include" /IExternal\glm /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Ball.cpp Brick.cpp Database.cpp Driver.cpp GLTools.cpp Input.cpp Menu.cpp Player.cpp Rectangle.cpp ShaderTools.cpp
+         Menu.cpp
          Generating Code...
-         Compiling...
-         GLTools.cpp
-         Generating Code...
+     1>d:\program files\programming stuff\c & c++\pong-out\project1\menu.cpp(68): warning C4715: 'Menu::displayMenu' : not all control paths return a value
          Skipping... (no relevant changes detected)
+         ShaderTools.cpp
          Rectangle.cpp
          Player.cpp
+         Input.cpp
+         GLTools.cpp
+         Driver.cpp
          Database.cpp
          Brick.cpp
          Ball.cpp
        Link:
-         D:\Program Files\Programming Stuff\Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Program Files\Programming Stuff\C & C++\pong-out\Debug\Project1.exe" /INCREMENTAL /NOLOGO glu32.lib opengl32.lib "External\glew-1.11.0\lib\Release\Win32\glew32.lib" "External\glfw-3.0.4.bin.WIN32\lib-msvc120\glfw3dll.lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\Program Files\Programming Stuff\C & C++\pong-out\Debug\Project1.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Program Files\Programming Stuff\C & C++\pong-out\Debug\Project1.lib" /MACHINE:X86 Debug\Ball.obj
+         D:\Program Files\Programming Stuff\Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Program Files\Programming Stuff\C & C++\pong-out\Debug\Pong-Out.exe" /INCREMENTAL /NOLOGO glu32.lib opengl32.lib "External\glew-1.11.0\lib\Release\Win32\glew32.lib" "External\glfw-3.0.4.bin.WIN32\lib-msvc120\glfw3dll.lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\Program Files\Programming Stuff\C & C++\pong-out\Debug\Pong-Out.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Program Files\Programming Stuff\C & C++\pong-out\Debug\Pong-Out.lib" /MACHINE:X86 Debug\Ball.obj
          Debug\Brick.obj
          Debug\Database.obj
          Debug\Driver.obj
          Debug\GLTools.obj
+         Debug\Input.obj
+         Debug\Menu.obj
          Debug\Player.obj
          Debug\Rectangle.obj
          Debug\ShaderTools.obj
-         Project1.vcxproj -> D:\Program Files\Programming Stuff\C & C++\pong-out\Debug\Project1.exe
+         Project1.vcxproj -> D:\Program Files\Programming Stuff\C & C++\pong-out\Debug\Pong-Out.exe
      1>Done Building Project "D:\Program Files\Programming Stuff\C & C++\pong-out\Project1\Project1.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:02.71
+Time Elapsed 00:00:01.25

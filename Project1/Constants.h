@@ -28,6 +28,12 @@
 #define KEY_RIGHT 7
 #define SPACEBAR 8
 #define R_CTRL 9
+#define KEY_ENTER 10
+
+#define ONE_PLAYER 0
+#define TWO_PLAYER 1
+#define SETTINGS 2
+#define EXIT 3
 
 const glm::vec3 BLUE = glm::vec3(0.0f, 0.0f, 1.0f);
 const glm::vec3 RED = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -35,7 +41,6 @@ const glm::vec3 GREEN = glm::vec3(0.0f, 1.0f, 0.0f);
 
 extern short W_HEIGHT_NO_BORDER;
 extern short W_WIDTH_NO_BORDER;
-extern bool debug;
 
 
 #endif
