@@ -41,6 +41,10 @@ public:
 	// Gets a pointer to the first ball in the players list of held (attached) balls
 	// and removes it from the list
 	Ball * popBall();
+	// Returns an array containing which CPU keys to set in Input::keysPressed[];
+	// logic of the AI. Returns an array of size 5
+	bool * cpuMove(Ball[], short);
+
 };
 
 #endif

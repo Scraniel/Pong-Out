@@ -14,6 +14,7 @@ Player::Player(float x, float y, float width, float height, glm::vec3 colour, sh
 	this->moveRight = false;
 	this->moveLeft = false;
 	this->ball[0] = ball;
+	this->ball[1] = NULL;
 	this->score = 0;
 	this->id = id;
 }
@@ -106,4 +107,36 @@ void Player::setBall(Ball * ball){
 	else{
 		this->ball[0] = ball;
 	}
+}
+
+// using the location of the balls, determines where to move
+// Right now, finds the closest ball, then moves up or down
+// towards it. Also launches a ball as soon as it gets one
+bool * Player::cpuMove(Ball balls[], short numBalls){
+	bool keysToPress[5] = { false, false, false, false, false };
+	Ball closestBall = balls[0];
+	
+	// Determine closest ball
+	for (int i = 1; i < numBalls; i++){
+		if (balls[i].getX() > closestBall.getX()){
+			closestBall = balls[i];
+		}
+	}
+
+	// Move towards it if it's on your half
+	if (closestBall.getX() >= W_WIDTH / 2.0){
+		if (this->getY() - ((1.0/3.0) * this->getHeight())  > closestBall.getY()){
+			keysToPress[CPU_DOWN - NUM_KEYBOARD_KEYS] = true;
+		}
+		else if (this->getY() - ((2.0 / 3.0) * this->getHeight())  < closestBall.getY()){
+			keysToPress[CPU_UP - NUM_KEYBOARD_KEYS] = true;
+		}
+
+		// If you have a ball, launch it
+		if (this->getBall()){
+			keysToPress[CPU_LAUNCH - NUM_KEYBOARD_KEYS] = true;
+		}
+	}
+
+	return keysToPress;
 }

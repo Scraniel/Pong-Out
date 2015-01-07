@@ -1,5 +1,5 @@
 #include "Input.h"
-bool Input::keysPressed[11];
+bool Input::keysPressed[16];
 bool Input::debug = false;
 
 // callback function for pressing keys. Right now, it sets the respective locations in an

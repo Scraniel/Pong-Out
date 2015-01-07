@@ -17,13 +17,18 @@
 class Ball;
 
 // These will eventually be moved to the Database class
-Player players[] = { Player(100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, BLUE, KEY_W, KEY_S, KEY_A, KEY_D, SPACEBAR, 1, NULL), Player(W_WIDTH - 100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, RED, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, R_CTRL, 2, NULL) };
+Player players[2];
 // Consider making a vector
-Ball balls[] = { Ball(players[0].getX() + players[0].getWidth(), players[0].getY() - (players[0].getHeight() / 2.0) + 12.5, 25.0f, 25.0f, players[0].getColour(), &players[0]), Ball(players[1].getX() - players[1].getWidth(), players[1].getY() - (players[1].getHeight() / 2.0) + 12.5, 25.0f, 25.0f, players[1].getColour(), &players[1]) };
+Ball balls[2];
 // Making a linked list so arbitrary element deletion is efficient
 std::list<Brick> bricks;
 // The main menu
 Menu menu;
+// Game mode
+bool singlePlayer;
+
+int numBalls = 2;
+int currentLoop = 0;
 
 // You can easily configure which button does which movement by adding cases to input.h
 // and then adding that button to 'player.movementKeys[MOVE_UP]' or whatever direction
@@ -102,12 +107,27 @@ int main(void)
 	// idea: Keep ONE main loop; the only thing that changes when using
 	//       single player mode is how commands are inputted to player 2
 	menu = Menu();
-	if (menu.displayMenu() == -1){
+	switch (menu.displayMenu()){
+	case -1:
 		GLTools::VAOcleanup();
 		glfwTerminate();
 		return 0;
+	case 0:
+		singlePlayer = true;	
+		players[1] = Player(W_WIDTH - 100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, RED, CPU_UP, CPU_DOWN, CPU_LEFT, CPU_RIGHT, CPU_LAUNCH, 2, NULL);
+		break;
+	case 1:
+		singlePlayer = false;
+		players[1] = Player(W_WIDTH - 100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, RED, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, R_CTRL, 2, NULL);
+		break;
+
 	}
 
+	//player 1 is always human controlled, and balls must be set after players are created. 
+	players[0] = Player(100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, BLUE, KEY_W, KEY_S, KEY_A, KEY_D, SPACEBAR, 1, NULL);
+	balls[0] = Ball(players[0].getX() + players[0].getWidth(), players[0].getY() - (players[0].getHeight() / 2.0) + 12.5, 25.0f, 25.0f, players[0].getColour(), &players[0]); 
+	balls[1] = Ball(players[1].getX() - players[1].getWidth(), players[1].getY() - (players[1].getHeight() / 2.0) + 12.5, 25.0f, 25.0f, players[1].getColour(), &players[1]);
+	
 	// Set balls to be attached to players
 	players[0].setBall(&balls[0]);
 	players[1].setBall(&balls[1]);
@@ -130,8 +150,22 @@ int main(void)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Check if any events (eg. key presses) have happened
 		glfwPollEvents();
-
 		processKeyPresses();
+		// If playing one player mode, move the AI
+		if (singlePlayer){
+			bool * cpuPressed;
+			if (currentLoop == 0){
+				cpuPressed = players[1].cpuMove(balls, numBalls);
+
+				// Set the correct keys in keysPressed
+				for (int i = 0; i < 5; i++){
+					Input::keysPressed[i + NUM_KEYBOARD_KEYS] = cpuPressed[i];
+				}
+			}
+
+			currentLoop = (currentLoop + 1) % CPU_WAIT;
+			
+		}
 
 		GLTools::enableVAO();
 		

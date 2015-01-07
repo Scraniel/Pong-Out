@@ -8,7 +8,7 @@
 class Input{
 
 public:
-	static bool keysPressed[11];
+	static bool keysPressed[16];
 	static bool debug;
 	static void key_callback(GLFWwindow*, int, int, int, int);
 };

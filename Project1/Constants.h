@@ -18,6 +18,7 @@
 #define MOVE_RIGHT 3
 #define LAUNCH_BALL 4
 
+#define NUM_KEYBOARD_KEYS 11
 #define KEY_W 0
 #define KEY_A 1
 #define KEY_S 2
@@ -29,6 +30,14 @@
 #define SPACEBAR 8
 #define R_CTRL 9
 #define KEY_ENTER 10
+//CPU 'buttons' (put at the end of the keyboard buttons)
+#define CPU_UP 11
+#define CPU_DOWN 12
+#define CPU_LEFT 13
+#define CPU_RIGHT 14
+#define CPU_LAUNCH 15
+
+#define CPU_WAIT 1
 
 #define ONE_PLAYER 0
 #define TWO_PLAYER 1

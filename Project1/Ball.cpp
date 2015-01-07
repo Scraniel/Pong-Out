@@ -12,6 +12,7 @@ Ball::Ball(float x, float y, float width, float height, glm::vec3 colour, Player
 	this->lastHit = attachedTo;
 	this->remove = false;
 }
+Ball::Ball(){}
 
 // Helper function
 void Ball::attachToPaddle(float * xOffset, float * yOffset){
