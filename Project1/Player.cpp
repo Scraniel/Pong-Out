@@ -112,7 +112,8 @@ void Player::setBall(Ball * ball){
 // using the location of the balls, determines where to move
 // Right now, finds the closest ball, then moves up or down
 // towards it. Also launches a ball as soon as it gets one
-bool * Player::cpuMove(Ball balls[], short numBalls){
+bool * Player::cpuMove(std::vector<Ball> balls){
+	short numBalls = balls.size();
 	bool keysToPress[5] = { false, false, false, false, false };
 	Ball closestBall = balls[0];
 	

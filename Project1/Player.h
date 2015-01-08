@@ -42,8 +42,8 @@ public:
 	// and removes it from the list
 	Ball * popBall();
 	// Returns an array containing which CPU keys to set in Input::keysPressed[];
-	// logic of the AI. Returns an array of size 5
-	bool * cpuMove(Ball[], short);
+	// logic of the AI. Returns a vector
+	bool * cpuMove(std::vector<Ball>);
 
 };
 
