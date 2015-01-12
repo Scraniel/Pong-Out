@@ -20,6 +20,7 @@ Menu menu;
 // Game mode
 bool singlePlayer;
 
+
 int main(void)
 {
 
@@ -48,6 +49,7 @@ int main(void)
 	}
 	Database db = Database(singlePlayer);
 
+	// Main game loop
 	do{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Check if any events (eg. key presses) have happened
@@ -56,6 +58,7 @@ int main(void)
 		db.processKeyPresses();
 		db.processCollisions();
 		db.moveBalls();
+
 		// If playing one player mode, move the AI
 		if (singlePlayer){
 			db.cpuMove();
@@ -78,6 +81,7 @@ int main(void)
 		for (Ball &ball : db.getBalls()){
 			GLTools::renderRectangle(&ball);
 		}
+
 		// render the bricks
 		std::list<Brick> list = db.getBricks();
 		std::list<Brick>::iterator iterator = list.begin();
@@ -90,6 +94,22 @@ int main(void)
 		
 		// Swap buffers
 		glfwSwapBuffers(GLTools::window);
+
+		// Go back to the menu
+		if (Input::keysPressed[KEY_ESC]){
+			switch (menu.displayMenu()){
+			case -1:
+				glfwSetWindowShouldClose(GLTools::window, GL_TRUE);
+			case 0:
+				singlePlayer = true;
+				db.resetSinglePlayer();
+				break;
+			case 1:
+				singlePlayer = false;
+				db.resetTwoPlayer();
+				break;
+			}
+		}
 
 	} // Check if the ESC key was pressed or the window was closed
 	while (!glfwWindowShouldClose(GLTools::window));

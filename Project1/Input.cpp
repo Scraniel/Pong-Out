@@ -1,5 +1,5 @@
 #include "Input.h"
-bool Input::keysPressed[16];
+bool Input::keysPressed[17];
 bool Input::debug = false;
 
 // callback function for pressing keys. Right now, it sets the respective locations in an
@@ -10,7 +10,10 @@ bool Input::debug = false;
 // KEY_W (0)).
 void Input::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS){
-		glfwSetWindowShouldClose(window, GL_TRUE);
+		keysPressed[KEY_ESC] = true;
+	}
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE){
+		keysPressed[KEY_ESC] = false;
 	}
 
 	// Player 1 (For now. eventually, input will just set the boolean for every key on the keyboard,

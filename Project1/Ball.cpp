@@ -50,6 +50,7 @@ void Ball::move(){
 			dy = -dy;
 		}
 				
+		// Ball goes off screen; attach to your paddle and score
 		if (newX + this->width > W_WIDTH){
 			attachToPaddle(&xOffset, &yOffset);
 
@@ -167,4 +168,13 @@ void Ball::setAttached(bool attached){
 
 bool Ball::isAttached(){
 	return this->attached;
+}
+
+void Ball::reset(){
+	float xOffset, yOffset;
+	attachToPaddle(&xOffset, &yOffset);
+
+	this->setX(this->lastHit->getX() + xOffset);
+	this->setY(this->lastHit->getY() + yOffset);
+	this->setAttached(true);
 }

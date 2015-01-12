@@ -25,7 +25,10 @@ public:
 	// collide override for bricks
 	void collide(Brick *);
 	void setAttached(bool);
+	// returns true if the ball is attached to a paddle
 	bool isAttached();
+	// returns the ball to its paddle, attaches it
+	void reset();
 };
 
 #endif

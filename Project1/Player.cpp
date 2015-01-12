@@ -1,12 +1,9 @@
 #include "Player.h"
 #include "Ball.h"
 
-Player::Player(float x, float y, float width, float height, glm::vec3 colour, short upKey, short downKey, short leftKey, short rightKey, short launchBall, short id, Ball * ball) : Rectangle(x, y, width, height, colour){
-	this->movementKeys[MOVE_UP] = upKey;
-	this->movementKeys[MOVE_DOWN] = downKey;
-	this->movementKeys[MOVE_LEFT] = leftKey;
-	this->movementKeys[MOVE_RIGHT] = rightKey;
-	this->movementKeys[LAUNCH_BALL] = launchBall;
+//TODO: Change the balls list into a vector
+Player::Player(float x, float y, float width, float height, glm::vec3 colour, short upKey, short downKey, short leftKey, short rightKey, short launchKey, short id, Ball * ball) : Rectangle(x, y, width, height, colour){
+	this->setInputKeys(upKey, downKey, leftKey, rightKey, launchKey);
 	// May need to do some refactoring when adding additional inputs (ie. AI / network players).
 	// It may be better style to only set these when receiving input (but maybe not).
 	this->moveDown = false;
@@ -126,10 +123,10 @@ bool * Player::cpuMove(std::vector<Ball> balls){
 
 	// Move towards it if it's on your half
 	if (closestBall.getX() >= W_WIDTH / 2.0){
-		if (this->getY() - ((1.0/3.0) * this->getHeight())  > closestBall.getY()){
+		if (closestBall.getY() <= this->getY() - this->getHeight()){
 			keysToPress[CPU_DOWN - NUM_KEYBOARD_KEYS] = true;
 		}
-		else if (this->getY() - ((2.0 / 3.0) * this->getHeight())  < closestBall.getY()){
+		else if (closestBall.getY() - closestBall.getHeight() >= this->getY()){
 			keysToPress[CPU_UP - NUM_KEYBOARD_KEYS] = true;
 		}
 
@@ -140,4 +137,30 @@ bool * Player::cpuMove(std::vector<Ball> balls){
 	}
 
 	return keysToPress;
+}
+
+void Player::reset(){
+	if (this->getId() == 2){
+		this->setX(W_WIDTH - 100.0f);
+		this->setY((W_HEIGHT / 2.0) + 50);
+	}
+	else{
+		this->setX(100.0f);
+		this->setY((W_HEIGHT / 2.0) + 50);
+	}
+	this->setScore(0);
+	this->ball[0] = NULL;
+	this->ball[1] = NULL;
+}
+
+void Player::setInputKeys(short upKey, short downKey, short leftKey, short rightKey, short launchKey){
+	this->movementKeys[MOVE_UP] = upKey;
+	this->movementKeys[MOVE_DOWN] = downKey;
+	this->movementKeys[MOVE_LEFT] = leftKey;
+	this->movementKeys[MOVE_RIGHT] = rightKey;
+	this->movementKeys[LAUNCH_BALL] = launchKey;
+}
+
+void Player::setScore(int score){
+	this->score = score;
 }

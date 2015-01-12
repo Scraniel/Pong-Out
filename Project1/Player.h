@@ -10,6 +10,7 @@ class Player : public Rectangle {
 	bool moveUp, moveDown, moveLeft, moveRight;
 	Ball * ball[2];
 	int score;
+	void setScore(int);
 public:
 	Player(float, float, float, float, glm::vec3 colour, short, short, short, short, short, short, Ball *);
 	Player();
@@ -18,8 +19,8 @@ public:
 	// have both the ball and player inherit it. This way we can place the move
 	// function, dx, dy, and all the move booleans there as well. 
 	void move();
-	// Sets the movement keys. Each key is defined in Constants.h
-	void setMovementKeys(short, short, short, short);
+	// Sets the movement / lanch keys. Each key is defined in Constants.h
+	void setInputKeys(short, short, short, short, short);
 	short* getMovementKeys();
 	// Returns the player ID for determining which side the player is on (right
 	// now with 2 players, P1 is on the left and P2 is on the right)
@@ -44,7 +45,8 @@ public:
 	// Returns an array containing which CPU keys to set in Input::keysPressed[];
 	// logic of the AI. Returns a vector
 	bool * cpuMove(std::vector<Ball>);
-
+	// Resets the player's position and score back to default
+	void reset();
 };
 
 #endif

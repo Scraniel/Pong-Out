@@ -1,7 +1,6 @@
 #include "Database.h"
 // This class will eventually hold all of the object information. All other
-// classes that need to access these objects will query the Database. For 
-// right now, all it holds is the 'Collide' function.
+// classes that need to access these objects will query the Database.
 
 Database::Database(bool singlePlayer){
 	players.push_back(Player(100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, BLUE, KEY_W, KEY_S, KEY_A, KEY_D, SPACEBAR, 1, NULL));
@@ -21,6 +20,13 @@ Database::Database(bool singlePlayer){
 	players[0].setBall(&balls[0]);
 	players[1].setBall(&balls[1]);
 
+	resetBricks();
+}
+
+void Database::resetBricks(){
+	if (!bricks.empty()){
+		bricks.clear();
+	}
 	/*
 	* This should be moved into the input class so that levels can be specified
 	* via a level file
@@ -67,10 +73,26 @@ bool Database::collide(Ball * one, Rectangle * two){
 
 void Database::resetSinglePlayer(){
 
+	for (int i = 0; i < 2; i++){
+		players[i].reset();
+		balls[i].setLastHit(&players[i]);
+		balls[i].reset();
+	}
+
+	players[1].setInputKeys(CPU_UP, CPU_DOWN, CPU_LEFT, CPU_RIGHT, CPU_LAUNCH);
+	resetBricks();
 }
 
 void Database::resetTwoPlayer(){
+	for (int i = 0; i < 2; i++){
+		players[i].reset();
+		balls[i].setLastHit(&players[i]);
+		balls[i].reset();
+	}
 
+	// This should be changed to be a file, as the player should be able to change input keys
+	players[1].setInputKeys(KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, R_CTRL);
+	resetBricks();
 }
 
 std::vector<Player> Database::getPlayers(){
@@ -117,11 +139,14 @@ void Database::processCollisions(){
 // and then adding that button to 'player.movementKeys[MOVE_UP]' or whatever direction
 // you want. 
 //
-// I imagine this could be done a little more efficiently using listeners insetad of polling.
+// I imagine this could be done a little more efficiently using listeners instead of polling,
+// however it's not terribly inefficient as it only ever iterates over 5 spots in the array.
 void Database::processKeyPresses(){
 	for (Player &player : players){
 		Ball * ball = player.getBall();
 		short * movementKeys = player.getMovementKeys();
+		// This loop deals with game input (ie. moving player and lanching ball).
+		//
 		// keysPressed is an array that (eventually) contains every key on the keyboard
 		// and possibly gamepad. When an element in keysPressed is true (ie. KEY_W, which
 		// corresponds to 0 in the array), that key is being pressed. movementKeys (think
@@ -173,6 +198,13 @@ void Database::processKeyPresses(){
 			}
 		}
 		player.move();
+
+		// Other input (ex. escape, debug)
+		/* Need to move the window pointer into the DB.
+		if (Input::keysPressed[KEY_ESC]){
+			glfwSetWindowShouldClose(GLTools::window, GL_TRUE);
+		}
+		*/
 	}
 }
 

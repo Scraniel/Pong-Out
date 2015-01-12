@@ -15,6 +15,8 @@ private:
 	// Right now only works with rectangles. If we add other things, 
 	// (such as triangles, circles, etc.) make an 'object' super class. 
 	bool collide(Ball * one, Rectangle * two);
+	// Deletes the bricks, and re-fills them back to default
+	void resetBricks();
 public:
 	Database(bool);
 	// Sets the game (bricks, players) up for single player
