@@ -4,7 +4,9 @@
 #include "Rectangle.h"
 class Menu
 {
-	Rectangle buttons[4];
+	Rectangle mainMenuButtons[4];
+	Rectangle inGameMenuButtons[2];
+	Rectangle inGameMenuPanel;
 	short selected;
 public:
 	Menu();
@@ -12,5 +14,6 @@ public:
 	int displayMenu();
 	// Displays the score screen, which gives the player the option to go back to the main menu or exit
 	void displayScore(int, int);
+	int inGameMenu();
 };
 

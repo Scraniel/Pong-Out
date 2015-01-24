@@ -97,19 +97,25 @@ int main(void)
 
 		// Go back to the menu
 		if (Input::keysPressed[KEY_ESC]){
-			switch (menu.displayMenu()){
-			case -1:
-				glfwSetWindowShouldClose(GLTools::window, GL_TRUE);
-			case 0:
-				singlePlayer = true;
-				db.resetSinglePlayer();
+			switch (menu.inGameMenu()){
+			case RESUME:
 				break;
-			case 1:
-				singlePlayer = false;
-				db.resetTwoPlayer();
-				break;
+			case MAIN_MENU:
+				switch (menu.displayMenu()){
+				case -1:
+					glfwSetWindowShouldClose(GLTools::window, GL_TRUE);
+				case 0:
+					singlePlayer = true;
+					db.resetSinglePlayer();
+					break;
+				case 1:
+					singlePlayer = false;
+					db.resetTwoPlayer();
+					break;
+				}
 			}
 		}
+		
 
 	} // Check if the ESC key was pressed or the window was closed
 	while (!glfwWindowShouldClose(GLTools::window));

@@ -45,6 +45,9 @@
 #define SETTINGS 2
 #define EXIT 3
 
+#define RESUME 0
+#define MAIN_MENU 1
+
 const glm::vec3 BLUE = glm::vec3(0.0f, 0.0f, 1.0f);
 const glm::vec3 RED = glm::vec3(1.0f, 0.0f, 0.0f);
 const glm::vec3 GREEN = glm::vec3(0.0f, 1.0f, 0.0f);
