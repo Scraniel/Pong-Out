@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include "Rectangle.h"
+#include "Timer.h"
 class Ball;
 
 // x and y coordinates are for the top left corner
@@ -9,8 +10,9 @@ class Player : public Rectangle {
 	short movementKeys[5], id;
 	bool moveUp, moveDown, moveLeft, moveRight;
 	Ball * ball[2];
-	int score;
+	int score, currentSpeed;
 	void setScore(int);
+	Timer speedUp, slowDown, biggerPaddle, multiBall;
 public:
 	Player(float, float, float, float, glm::vec3 colour, short, short, short, short, short, short, Ball *);
 	Player();
@@ -47,6 +49,14 @@ public:
 	bool * cpuMove(std::vector<Ball>);
 	// Resets the player's position and score back to default
 	void reset();
+	// Gives the player a powerup
+	void startPowerup(int);
+	// Removes a powerup
+	void stopPowerup(int);
+	// Returns current speed
+	int getCurrentSpeed();
+	// Checks current powerups, removes them if enough time has passed
+	void checkPowerups();
 };
 
 #endif

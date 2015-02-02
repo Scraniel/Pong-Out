@@ -8,6 +8,13 @@
 #define BALL_START_DX 15
 #define BALL_START_DY 8
 
+#define PADDLE_SPEED_NORMAL 15
+#define PADDLE_SPEED_FAST 20
+#define PADDLE_SPEED_SLOW 10
+
+#define PADDLE_LENGTH_NORMAL 100.0f
+#define PADDLE_LENGTH_LONG 150.0f
+
 #define BRICK_HEIGHT 50
 #define BRICK_WIDTH 25
 
@@ -48,9 +55,20 @@
 #define RESUME 0
 #define MAIN_MENU 1
 
+#define POWERUP_SPEED 10
+#define SPEED_UP 1
+#define SLOW_DOWN 2
+#define MULTI_BALL 3
+#define BIGGER_PADDLE 4
+#define LEFT -1
+#define RIGHT 1
+
+#define POWERUP_TIME 7
+
 const glm::vec3 BLUE = glm::vec3(0.0f, 0.0f, 1.0f);
 const glm::vec3 RED = glm::vec3(1.0f, 0.0f, 0.0f);
 const glm::vec3 GREEN = glm::vec3(0.0f, 1.0f, 0.0f);
+const glm::vec3 ORANGE = glm::vec3(1.0f, 0.59765625, 0.0f);
 
 extern short W_HEIGHT_NO_BORDER;
 extern short W_WIDTH_NO_BORDER;

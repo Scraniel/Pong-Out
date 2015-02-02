@@ -6,10 +6,10 @@ Database::Database(bool singlePlayer){
 	players.push_back(Player(100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, BLUE, KEY_W, KEY_S, KEY_A, KEY_D, SPACEBAR, 1, NULL));
 
 	if (singlePlayer){
-		players.push_back(Player(W_WIDTH - 100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, RED, CPU_UP, CPU_DOWN, CPU_LEFT, CPU_RIGHT, CPU_LAUNCH, 2, NULL));
+		players.push_back(Player(W_WIDTH - 100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, PADDLE_LENGTH_NORMAL, RED, CPU_UP, CPU_DOWN, CPU_LEFT, CPU_RIGHT, CPU_LAUNCH, 2, NULL));
 	}
 	else{
-		players.push_back(Player(W_WIDTH - 100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, RED, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, R_CTRL, 2, NULL));
+		players.push_back(Player(W_WIDTH - 100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, PADDLE_LENGTH_NORMAL, RED, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, R_CTRL, 2, NULL));
 	}
 
 	
@@ -33,7 +33,7 @@ void Database::resetBricks(){
 	*/
 	// Create bricks
 	for (int i = 0; i < 14; i++){
-		bricks.push_back(Brick((2 * W_WIDTH) / 5.0, W_HEIGHT - i*BRICK_HEIGHT, BRICK_WIDTH, BRICK_HEIGHT, GREEN, false, 1));
+		bricks.push_back(Brick((2 * W_WIDTH) / 5.0, W_HEIGHT - i*BRICK_HEIGHT, BRICK_WIDTH, BRICK_HEIGHT, GREEN, true, 1));
 	}
 
 	for (int i = 0; i < 14; i++){
@@ -50,7 +50,7 @@ void Database::resetBricks(){
 * 
 * TODO: make a 'In game object' class that is inherited by ball and powerup.
 */
-bool Database::collide(Ball * one, Rectangle * two){
+bool Database::collide(Rectangle * one, Rectangle * two){
 	// One is to the left of two
 	if (one->getX() + one->getWidth() < two->getX()){
 		return false;
@@ -107,7 +107,12 @@ std::list<Brick> Database::getBricks(){
 	return this->bricks;
 }
 
+std::list<Powerup> Database::getPowerups(){
+	return this->powerups;
+}
+
 void Database::processCollisions(){
+	// Ball collisions
 	for (Ball &ball : this->balls){
 
 		for (Player &player : this->players){
@@ -125,11 +130,52 @@ void Database::processCollisions(){
 
 			if (Database::collide(&ball, &(*iterator)) && !ball.isAttached()){
 				collision = true;
+
+				// if the ball has a powerup inside, generate one and add it to the list
+				// of powerups
+				if (iterator->hasPowerup()){
+					int direction;
+					if (ball.lastHitID() == 1){
+						direction = LEFT;
+					}
+					else{
+						direction = RIGHT;
+					}
+
+					generatePowerup(iterator->getX(), iterator->getY(), direction);
+				}
+
 				ball.collide(&(*iterator));
 				iterator = bricks.erase(iterator);
 			}
 			if (iterator != bricks.end() && !collision){
 				iterator++;
+			}
+		}
+	}
+
+	// Powerup collisions
+	if (!powerups.empty()){
+		for (Player &player : this->players){
+			std::list<Powerup>::iterator iterator = this->powerups.begin();
+			while (iterator != powerups.end()){
+
+				// Check to see if the powerup hit the wall. If so, delete it
+				if (iterator->hitWall()){
+					iterator = powerups.erase(iterator);
+					continue;
+				}
+
+				bool collision = false;
+
+				if (Database::collide(&(*iterator), &player)){
+					collision = true;
+					iterator->collide(&player);
+					iterator = powerups.erase(iterator);
+				}
+				if (iterator != powerups.end() && !collision){
+					iterator++;
+				}
 			}
 		}
 	}
@@ -165,11 +211,11 @@ void Database::processKeyPresses(){
 			if (Input::keysPressed[movementKeys[i]]){
 				switch (i){
 				case MOVE_UP:
-					player.setdY(15);
+					player.setdY(player.getCurrentSpeed());
 
 					break;
 				case MOVE_DOWN:
-					player.setdY(-15);
+					player.setdY(-player.getCurrentSpeed());
 					break;
 				case MOVE_LEFT:
 					if (Input::debug){
@@ -198,6 +244,7 @@ void Database::processKeyPresses(){
 			}
 		}
 		player.move();
+		player.checkPowerups();
 
 		// Other input (ex. escape, debug)
 		/* Need to move the window pointer into the DB.
@@ -227,4 +274,16 @@ void Database::cpuMove(){
 
 	// An attempt to make the CPU less jittery
 	currentLoop = (currentLoop + 1) % CPU_WAIT;
+}
+
+void Database::generatePowerup(float x, float y, int direction){
+	// generate a random powerup and add it to the list
+	powerups.push_back(Powerup(x, y, direction, rand() % 4 + 1));
+}
+
+
+void Database::movePowerups(){
+	for (Powerup &powerup : this->powerups){
+		powerup.move();
+	}
 }

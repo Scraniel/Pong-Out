@@ -178,3 +178,7 @@ void Ball::reset(){
 	this->setY(this->lastHit->getY() + yOffset);
 	this->setAttached(true);
 }
+
+int Ball::lastHitID(){
+	return this->lastHit->getId();
+}

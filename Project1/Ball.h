@@ -29,6 +29,8 @@ public:
 	bool isAttached();
 	// returns the ball to its paddle, attaches it
 	void reset();
+	// returns ID of last player hit
+	int lastHitID();
 };
 
 #endif

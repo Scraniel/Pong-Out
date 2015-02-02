@@ -58,6 +58,7 @@ int main(void)
 		db.processKeyPresses();
 		db.processCollisions();
 		db.moveBalls();
+		db.movePowerups();
 
 		// If playing one player mode, move the AI
 		if (singlePlayer){
@@ -83,13 +84,23 @@ int main(void)
 		}
 
 		// render the bricks
-		std::list<Brick> list = db.getBricks();
-		std::list<Brick>::iterator iterator = list.begin();
-		while (iterator != list.end()){
+		std::list<Brick> brickList = db.getBricks();
+		std::list<Brick>::iterator brickIterator = brickList.begin();
+		while (brickIterator != brickList.end()){
 
-			GLTools::renderRectangle(&(*iterator));
+			GLTools::renderRectangle(&(*brickIterator));
 
-			iterator++;
+			brickIterator++;
+		}
+		
+		// render the powerups
+		std::list<Powerup> powerupList = db.getPowerups();
+		std::list<Powerup>::iterator powerupIterator = powerupList.begin();
+		while (powerupIterator != powerupList.end()){
+
+			GLTools::renderRectangle(&(*powerupIterator));
+
+			powerupIterator++;
 		}
 		
 		// Swap buffers

@@ -75,8 +75,10 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Powerup.cpp" />
     <ClCompile Include="Rectangle.cpp" />
     <ClCompile Include="ShaderTools.cpp" />
+    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ball.h" />
@@ -87,8 +89,10 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Powerup.h" />
     <ClInclude Include="Rectangle.h" />
     <ClInclude Include="stdglincludes.h" />
+    <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fragmentShader.glsl" />

@@ -4,10 +4,11 @@
 #include "Rectangle.h"
 
 class Brick : public Rectangle{
-	bool remove, hasPowerup;
+	bool remove, powerup;
 	int lives;
 public:
 	Brick(float, float, float, float, glm::vec3, bool, int);
+	bool hasPowerup();
 }; 
 
 #endif // !BRICK_H

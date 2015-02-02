@@ -14,6 +14,7 @@ Player::Player(float x, float y, float width, float height, glm::vec3 colour, sh
 	this->ball[1] = NULL;
 	this->score = 0;
 	this->id = id;
+	this->currentSpeed = PADDLE_SPEED_NORMAL;
 }
 
 Player::Player(){}
@@ -163,4 +164,62 @@ void Player::setInputKeys(short upKey, short downKey, short leftKey, short right
 
 void Player::setScore(int score){
 	this->score = score;
+}
+
+void Player::startPowerup(int type){
+	switch (type){
+	case SPEED_UP:
+		this->speedUp.startTimer();
+		this->currentSpeed = PADDLE_SPEED_FAST;
+		break;
+	case SLOW_DOWN:
+		this->slowDown.startTimer();
+		this->currentSpeed = PADDLE_SPEED_SLOW;
+		break;
+	case MULTI_BALL:
+		break;
+	case BIGGER_PADDLE:
+		this->biggerPaddle.startTimer();
+		this->setHeight(PADDLE_LENGTH_LONG);
+		break;
+	}
+}
+
+void Player::stopPowerup(int type){
+	switch (type){
+	case SPEED_UP:
+		this->speedUp.endTimer();
+		this->currentSpeed = PADDLE_SPEED_NORMAL;
+		break;
+	case SLOW_DOWN:
+		this->slowDown.endTimer();
+		this->currentSpeed = PADDLE_SPEED_NORMAL;
+		break;
+	case MULTI_BALL:
+		break;
+	case BIGGER_PADDLE:
+		this->biggerPaddle.endTimer();
+		this->setHeight(PADDLE_LENGTH_NORMAL);
+		break;
+	}
+}
+
+int Player::getCurrentSpeed(){
+
+	return this->currentSpeed;
+}
+
+void Player::checkPowerups(){
+	if (speedUp.currentTime() >= POWERUP_TIME){
+		this->stopPowerup(SPEED_UP);
+	}
+	if (slowDown.currentTime() >= POWERUP_TIME){
+		this->stopPowerup(SLOW_DOWN);
+	}
+	if (multiBall.currentTime() >= POWERUP_TIME){
+		this->stopPowerup(MULTI_BALL);
+	}
+	if (biggerPaddle.currentTime() >= POWERUP_TIME){
+		this->stopPowerup(BIGGER_PADDLE);
+	}
 }
