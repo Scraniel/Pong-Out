@@ -3,6 +3,8 @@
 #include "Rectangle.h"
 #include "stdglincludes.h"
 #include <stdio.h>
+#include <iostream>
+#include "lodepng.h"
 
 // Contains various methods to initialize and use the openGL functionality
 // such as rendering a rectangle (and later other shapes)
@@ -12,6 +14,7 @@ class GLTools
 	// not need to be known elsewhere in the program
 	static GLuint vertexBuffer, colourBuffer, programID, vertexArrayID;
 	static GLfloat vertexData [];
+	static GLfloat uvData[];
 private:
 	static void bindVAOs(Rectangle *);
 	static void reloadMVPUniform(Rectangle *);
@@ -32,5 +35,7 @@ public:
 	static void VAOcleanup();
 	// Inizializes GLFW for window context / keyboard input
 	static int GLFWInit(GLFWkeyfun);
+	// Decode a PNG image for use in shaders
+	static std::vector<unsigned char> decodeLodePNG(const char*);
 };
 

@@ -1,13 +1,22 @@
 #include "GLTools.h"
 
 GLuint GLTools::vertexBuffer, GLTools::colourBuffer, GLTools::programID, GLTools::vertexArrayID;
-GLfloat GLTools::vertexData []= {
+GLfloat GLTools::vertexData [] = {
 	0.0f, 0.0f, 0.0f,
 	2.0f, 0.0f, 0.0f,
 	0.0f, -2.0f, 0.0f,
 	0.0f, -2.0f, 0.0f,
 	2.0f, 0.0f, 0.0f,
 	2.0f, -2.0f, 0.0f
+};
+GLfloat GLTools::uvData[] = {
+	0.0f, 1.0f,
+	0.0f, 0.0f,
+	1.0f, 1.0f,
+	1.0f, 1.0f,
+	0.0f, 0.0f,
+	1.0f, 0.0f
+
 };
 GLFWwindow * GLTools::window;
 
@@ -160,4 +169,20 @@ void GLTools::setupVAOs(){
 		);
 
 	glBindVertexArray(0);
+}
+
+// This function is frome the lodepng examples:
+// https://raw.githubusercontent.com/lvandeve/lodepng/master/example_decode.cpp
+std::vector<unsigned char> GLTools::decodeLodePNG(const char* filename){
+
+	std::vector<unsigned char> image; //the raw pixels
+	unsigned width, height;
+
+	//decode
+	unsigned error = lodepng::decode(image, width, height, filename);
+
+	//if there's an error, display it
+	if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
+
+	return image;
 }
