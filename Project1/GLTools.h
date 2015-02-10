@@ -12,11 +12,12 @@ class GLTools
 {
 	// Private members and functions are used as helpers / data that does
 	// not need to be known elsewhere in the program
-	static GLuint vertexBuffer, colourBuffer, programID, vertexArrayID;
+	static GLuint vertexBuffer, colourBuffer, textureBuffer, programID, vertexArrayID;
 	static GLfloat vertexData [];
 	static GLfloat uvData[];
 private:
-	static void bindVAOs(Rectangle *);
+	static void bindVBOs();
+	static void updateColourVBO(Rectangle *);
 	static void reloadMVPUniform(Rectangle *);
 	static void generateVAOs();
 	static void setupVAOs();
@@ -36,6 +37,6 @@ public:
 	// Inizializes GLFW for window context / keyboard input
 	static int GLFWInit(GLFWkeyfun);
 	// Decode a PNG image for use in shaders
-	static std::vector<unsigned char> decodeLodePNG(const char*);
+	static GLuint decodeLodePNG(const char*);
 };
 

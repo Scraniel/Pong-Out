@@ -29,7 +29,16 @@ int main(void)
 	}
 
 	GLTools::GLInit();
+	/*
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	Rectangle rect(W_WIDTH / 2, W_HEIGHT / 2, 100, 100, RED);
+	rect.setTexturePath("Assets/Graphics/Brick.png");
+	GLTools::renderRectangle(&rect);
+	glfwSwapBuffers(GLTools::window);
+	system("PAUSE");
+	*/
 
+	
 	// Show the menu before getting to the game
 	// Right now, single and two player modes enter single player mode
 	// idea: Keep ONE main loop; the only thing that changes when using
@@ -47,6 +56,7 @@ int main(void)
 		singlePlayer = false;
 		break;
 	}
+	
 	Database db = Database(singlePlayer);
 
 	// Main game loop
@@ -130,8 +140,9 @@ int main(void)
 
 	} // Check if the ESC key was pressed or the window was closed
 	while (!glfwWindowShouldClose(GLTools::window));
-
+	
 	GLTools::VAOcleanup();
+	
 	// Close OpenGL window and terminate GLFW
 	glfwTerminate();
 

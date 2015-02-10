@@ -65,6 +65,13 @@
 
 #define POWERUP_TIME 7
 
+#define PLAYER1_PADDLE "Assets/Graphics/Paddle.png"
+#define PLAYER2_PADDLE "Assets/Graphics/Paddle.png"
+#define PLAYER1_BALL "Assets/Graphics/BlueBall.png"
+#define PLAYER2_BALL "Assets/Graphics/RedBall.png"
+#define BRICK_TEXTURE "Assets/Graphics/Brick.png"
+
+
 const glm::vec3 BLUE = glm::vec3(0.0f, 0.0f, 1.0f);
 const glm::vec3 RED = glm::vec3(1.0f, 0.0f, 0.0f);
 const glm::vec3 GREEN = glm::vec3(0.0f, 1.0f, 0.0f);

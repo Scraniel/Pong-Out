@@ -13,6 +13,7 @@ Rectangle::Rectangle(float x, float y, float width, float height, glm::vec3 colo
 	this->hitTop = false;
 	this->hitLeft = false;
 	this->hitRight = false;
+	this->texturePath = BRICK_TEXTURE;
 
 	// need to implement scaling based on width and height
 	glm::mat4 scale = glm::scale(glm::vec3(width / W_WIDTH, height / W_HEIGHT, 0.0));
@@ -138,4 +139,12 @@ void Rectangle::collide(Rectangle * object){
 		this->hitRight = true;
 	}
 	
+}
+
+void Rectangle::setTexturePath(const char * texturePath){
+	this->texturePath = texturePath;
+}
+
+const char * Rectangle::getTexturePath(){
+	return texturePath;
 }

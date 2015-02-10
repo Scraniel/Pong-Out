@@ -3,18 +3,28 @@
 // classes that need to access these objects will query the Database.
 
 Database::Database(bool singlePlayer){
-	players.push_back(Player(100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, BLUE, KEY_W, KEY_S, KEY_A, KEY_D, SPACEBAR, 1, NULL));
+	Player newPlayer(100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, BLUE, KEY_W, KEY_S, KEY_A, KEY_D, SPACEBAR, 1, NULL);
+	newPlayer.setTexturePath(PLAYER1_PADDLE);
+	players.push_back(newPlayer);
 
 	if (singlePlayer){
-		players.push_back(Player(W_WIDTH - 100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, PADDLE_LENGTH_NORMAL, RED, CPU_UP, CPU_DOWN, CPU_LEFT, CPU_RIGHT, CPU_LAUNCH, 2, NULL));
+		Player newPlayer(W_WIDTH - 100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, PADDLE_LENGTH_NORMAL, RED, CPU_UP, CPU_DOWN, CPU_LEFT, CPU_RIGHT, CPU_LAUNCH, 2, NULL);
+		newPlayer.setTexturePath(PLAYER2_PADDLE);
+		players.push_back(newPlayer);
 	}
 	else{
-		players.push_back(Player(W_WIDTH - 100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, PADDLE_LENGTH_NORMAL, RED, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, R_CTRL, 2, NULL));
+		Player newPlayer(W_WIDTH - 100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, PADDLE_LENGTH_NORMAL, RED, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, R_CTRL, 2, NULL);
+		newPlayer.setTexturePath(PLAYER2_PADDLE);
+		players.push_back(newPlayer);
 	}
 
-	
-	balls.push_back(Ball(players[0].getX() + players[0].getWidth(), players[0].getY() - (players[0].getHeight() / 2.0) + 12.5, 25.0f, 25.0f, players[0].getColour(), &players[0]));
-	balls.push_back(Ball(players[1].getX() - players[1].getWidth(), players[1].getY() - (players[1].getHeight() / 2.0) + 12.5, 25.0f, 25.0f, players[1].getColour(), &players[1]));
+	Ball newBall1(players[0].getX() + players[0].getWidth(), players[0].getY() - (players[0].getHeight() / 2.0) + 12.5, 25.0f, 25.0f, players[0].getColour(), &players[0]);
+	newBall1.setTexturePath(PLAYER1_BALL);
+	balls.push_back(newBall1);
+
+	Ball newBall2(players[1].getX() - players[1].getWidth(), players[1].getY() - (players[1].getHeight() / 2.0) + 12.5, 25.0f, 25.0f, players[1].getColour(), &players[1]);
+	newBall2.setTexturePath(PLAYER2_BALL);
+	balls.push_back(newBall2);
 
 	// Set balls to be attached to players
 	players[0].setBall(&balls[0]);
@@ -33,11 +43,15 @@ void Database::resetBricks(){
 	*/
 	// Create bricks
 	for (int i = 0; i < 14; i++){
-		bricks.push_back(Brick((2 * W_WIDTH) / 5.0, W_HEIGHT - i*BRICK_HEIGHT, BRICK_WIDTH, BRICK_HEIGHT, GREEN, true, 1));
+		Brick newBrick((2 * W_WIDTH) / 5.0, W_HEIGHT - i*BRICK_HEIGHT, BRICK_WIDTH, BRICK_HEIGHT, GREEN, true, 1);
+		newBrick.setTexturePath(BRICK_TEXTURE);
+		bricks.push_back(newBrick);
 	}
 
 	for (int i = 0; i < 14; i++){
-		bricks.push_back(Brick((3 * W_WIDTH) / 5.0, W_HEIGHT - i*BRICK_HEIGHT, BRICK_WIDTH, BRICK_HEIGHT, GREEN, false, 1));
+		Brick newBrick((3 * W_WIDTH) / 5.0, W_HEIGHT - i*BRICK_HEIGHT, BRICK_WIDTH, BRICK_HEIGHT, GREEN, false, 1);
+		newBrick.setTexturePath(BRICK_TEXTURE);
+		bricks.push_back(newBrick);
 	}
 }
 

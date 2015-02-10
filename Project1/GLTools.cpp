@@ -1,6 +1,6 @@
 #include "GLTools.h"
 
-GLuint GLTools::vertexBuffer, GLTools::colourBuffer, GLTools::programID, GLTools::vertexArrayID;
+GLuint GLTools::vertexBuffer, GLTools::colourBuffer, GLTools::textureBuffer, GLTools::programID, GLTools::vertexArrayID;
 GLfloat GLTools::vertexData [] = {
 	0.0f, 0.0f, 0.0f,
 	2.0f, 0.0f, 0.0f,
@@ -32,10 +32,16 @@ void GLTools::GLInit(){
 	//TODO: Move to GLTools
 	generateVAOs();
 	setupVAOs();
+	bindVBOs();
 }
 
 void GLTools::renderRectangle(Rectangle * object){
-	bindVAOs(object);
+	enableVAO();
+	
+	/* For Colour
+	updateColourVBO(object);
+	*/
+
 	reloadMVPUniform(object);
 	// Draw the triangles!
 	glDrawArrays(GL_TRIANGLES, 0, 2 * 3); // 2*(3 indices starting at 0) -> 2 triangles = square
@@ -105,11 +111,17 @@ int GLTools::GLFWInit(GLFWkeyfun key_callback){
  */
 
 // This function may need to change if something is required to be rendered as something different than a rectangle
-void GLTools::bindVAOs(Rectangle *object){
+void GLTools::bindVBOs(){
 	// Buffer for Vertices
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 18, &vertexData[0], GL_STATIC_DRAW);
 
+	// Buffer for UV coordinates
+	glBindBuffer(GL_ARRAY_BUFFER, textureBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 12, &uvData[0], GL_STATIC_DRAW);
+}
+
+void GLTools::updateColourVBO(Rectangle * object){
 	// Buffer for Colours
 	glm::vec3 colour[] = { object->getColour(), object->getColour(), object->getColour(), object->getColour(), object->getColour(), object->getColour() };
 	glBindBuffer(GL_ARRAY_BUFFER, colourBuffer);
@@ -125,6 +137,15 @@ void GLTools::reloadMVPUniform(Rectangle *object){
 	// in the "MVP" uniform
 	// For each model you render, since the MVP will be different (at least the M part)
 	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &(object->getModel()[0][0]));
+
+	// Sending texture data
+	GLuint texture = decodeLodePNG(object->getTexturePath());
+	GLuint textureID = glGetUniformLocation(programID, "textureSampler");
+	// Bind our texture in Texture Unit 0
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	// Set our "myTextureSampler" sampler to user Texture Unit 0
+	glUniform1i(textureID, 0);
 }
 
 /*
@@ -135,8 +156,11 @@ void GLTools::generateVAOs(){
 	// Creating and binding Vertex Array Object (VAO)
 	glGenVertexArrays(1, &vertexArrayID);
 	glGenBuffers(1, &vertexBuffer);
-	glGenBuffers(1, &colourBuffer);
+	glGenBuffers(1, &textureBuffer);
 
+	/* For colour
+	glGenBuffers(1, &colourBuffer);
+	*/
 	// Create and compile our GLSL program from the shaders
 	programID = LoadShaders("vertexShader.glsl", "fragmentShader.glsl");
 }
@@ -155,8 +179,21 @@ void GLTools::setupVAOs(){
 		0,                  // stride
 		(void*)0            // array buffer offset
 		);
-	glEnableVertexAttribArray(1); // match layout # in shader
 
+	glEnableVertexAttribArray(1); // match layout # in shader
+	// 2nd attribute buffer : uv NOT WORKING YET
+	glBindBuffer(GL_ARRAY_BUFFER, textureBuffer);
+	glVertexAttribPointer(
+		1,		// attribute layout # above
+		2,		// # of components (ie UV )
+		GL_FLOAT,	// type of components
+		GL_FALSE,	// need to be normalized?
+		0,		// stride
+		(void*)0	// array buffer offset
+		);
+
+	/* For colour
+	glEnableVertexAttribArray(1); // match layout # in shader
 	// 2nd attribute buffer : colour NOT WORKING YET
 	glBindBuffer(GL_ARRAY_BUFFER, colourBuffer);
 	glVertexAttribPointer(
@@ -167,13 +204,13 @@ void GLTools::setupVAOs(){
 		0,		// stride
 		(void*)0	// array buffer offset
 		);
-
+	*/
 	glBindVertexArray(0);
 }
 
 // This function is frome the lodepng examples:
 // https://raw.githubusercontent.com/lvandeve/lodepng/master/example_decode.cpp
-std::vector<unsigned char> GLTools::decodeLodePNG(const char* filename){
+GLuint GLTools::decodeLodePNG(const char* filename){
 
 	std::vector<unsigned char> image; //the raw pixels
 	unsigned width, height;
@@ -184,5 +221,18 @@ std::vector<unsigned char> GLTools::decodeLodePNG(const char* filename){
 	//if there's an error, display it
 	if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
 
-	return image;
+	// Create one OpenGL texture
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+
+	// "Bind" the newly created texture : all future texture functions will modify this texture
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	// Give the image to OpenGL
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.data());
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	return textureID;
 }

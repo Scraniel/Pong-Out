@@ -1,12 +1,16 @@
 #version 330 core
-in vec3 interpolate_colour;
+
+// Interpolated values from the vertex shaders
+in vec2 UV;
+
 // Ouput data
-out vec3 colour;
+out vec3 color;
 
-void main()
-{
+// Values that stay constant for the whole mesh.
+uniform sampler2D textureSampler;
 
-	// Output color = red 
-	colour = interpolate_colour;
+void main(){
 
+	// Output color = color of the texture at the specified UV
+	color = texture2D( textureSampler, UV ).rgb;
 }

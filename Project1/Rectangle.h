@@ -18,6 +18,7 @@ protected:
 	float width, height, x, y, dx, dy;
 	glm::mat4 model;
 	glm::vec3 colour;
+	const char * texturePath;
 public:
 	Rectangle(float, float, float, float, glm::vec3);
 	Rectangle();
@@ -41,6 +42,8 @@ public:
 	// sets the correct 'hit' boolean value based on what side of the rectangle
 	// was hit.
 	virtual void collide(Rectangle*);
+	void setTexturePath(const char *);
+	const char * getTexturePath();
 
 };
 
