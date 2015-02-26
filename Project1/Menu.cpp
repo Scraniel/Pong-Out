@@ -2,24 +2,39 @@
 
 Menu::Menu()
 {
+
+	this->inGameSelectedTex[0] = GLTools::decodeLodePNG("Assets/Graphics/ResumeSel.png");
+	this->inGameUnselectedTex[0] = GLTools::decodeLodePNG("Assets/Graphics/ResumeUn.png");
+	this->inGameSelectedTex[1] = GLTools::decodeLodePNG("Assets/Graphics/MainMenuSel.png");
+	this->inGameUnselectedTex[1] = GLTools::decodeLodePNG("Assets/Graphics/MainMenuUn.png");
+	
+	this->selectedTex[0] = GLTools::decodeLodePNG("Assets/Graphics/SinglePlayerSel.png");
+	this->unselectedTex[0] = GLTools::decodeLodePNG("Assets/Graphics/SinglePlayerUn.png");
+	this->selectedTex[1] = GLTools::decodeLodePNG("Assets/Graphics/TwoPlayerSel.png");
+	this->unselectedTex[1] = GLTools::decodeLodePNG("Assets/Graphics/TwoPlayerUn.png");
+	this->selectedTex[2] = GLTools::decodeLodePNG("Assets/Graphics/SettingsSel.png");
+	this->unselectedTex[2] = GLTools::decodeLodePNG("Assets/Graphics/SettingsUn.png");
+	this->selectedTex[3] = GLTools::decodeLodePNG("Assets/Graphics/ExitSel.png");
+	this->unselectedTex[3] = GLTools::decodeLodePNG("Assets/Graphics/ExitUn.png");
+
 	// 1 player mode button
-	mainMenuButtons[0] = Rectangle(W_WIDTH / 2.0 - 75, W_HEIGHT / 2.0, 150, 50, GREEN);
+	mainMenuButtons[0] = Rectangle(W_WIDTH / 2.0 - 75, W_HEIGHT / 2.0, 150, 50, GREEN, selectedTex[0]);
 
 	// 2 player mode
-	mainMenuButtons[1] = Rectangle(W_WIDTH / 2.0 - 75, W_HEIGHT / 2.0 - 75, 150, 50, RED);
+	mainMenuButtons[1] = Rectangle(W_WIDTH / 2.0 - 75, W_HEIGHT / 2.0 - 75, 150, 50, RED, unselectedTex[1]);
 
 	// Settings
-	mainMenuButtons[2] = Rectangle(W_WIDTH / 2.0 - 75, W_HEIGHT / 2.0 - 150, 150, 50, RED);
+	mainMenuButtons[2] = Rectangle(W_WIDTH / 2.0 - 75, W_HEIGHT / 2.0 - 150, 150, 50, RED, unselectedTex[2]);
 
 	// Exit
-	mainMenuButtons[3] = Rectangle(W_WIDTH / 2.0 - 75, W_HEIGHT / 2.0 - 225, 150, 50, RED);
+	mainMenuButtons[3] = Rectangle(W_WIDTH / 2.0 - 75, W_HEIGHT / 2.0 - 225, 150, 50, RED, unselectedTex[3]);
 
 	// in Game menu panel
-	inGameMenuPanel = Rectangle(W_WIDTH / 2.0 - 100, W_HEIGHT / 2.0 + 150, 200, 250, BLUE);
+	inGameMenuPanel = Rectangle(W_WIDTH / 2.0 - 100, W_HEIGHT / 2.0 + 150, 200, 250, BLUE, GLTools::decodeLodePNG("Assets/Graphics/MenuPanel.png"));
 
 	// in Game menu buttons
-	inGameMenuButtons[0] = Rectangle(inGameMenuPanel.getX() + 25, inGameMenuPanel.getY() - (inGameMenuPanel.getHeight() * (1.0 / 5.0)), 150, 50, GREEN);
-	inGameMenuButtons[1] = Rectangle(inGameMenuPanel.getX() + 25, inGameMenuPanel.getY() - (inGameMenuPanel.getHeight() * (3.0 / 5.0)), 150, 50, RED);
+	inGameMenuButtons[0] = Rectangle(inGameMenuPanel.getX() + 25, inGameMenuPanel.getY() - (inGameMenuPanel.getHeight() * (1.0 / 5.0)), 150, 50, GREEN, inGameSelectedTex[0]);
+	inGameMenuButtons[1] = Rectangle(inGameMenuPanel.getX() + 25, inGameMenuPanel.getY() - (inGameMenuPanel.getHeight() * (3.0 / 5.0)), 150, 50, RED, inGameUnselectedTex[1]);
 	
 	selected = ONE_PLAYER;
 }
@@ -33,8 +48,10 @@ int Menu::displayMenu()
 	// Reset buttons to default state (top button selected, the rest not)
 	selected = ONE_PLAYER;
 	mainMenuButtons[0].setColour(GREEN);
+	mainMenuButtons[0].setTextureSampler(selectedTex[0]);
 	for (int i = 1; i < 4; i++){
 		mainMenuButtons[i].setColour(RED);
+		mainMenuButtons[i].setTextureSampler(unselectedTex[i]);
 	}
 
 	while (!onePlayer){
@@ -54,14 +71,18 @@ int Menu::displayMenu()
 		if (Input::keysPressed[KEY_DOWN]){
 			if (selected != EXIT){
 				mainMenuButtons[selected].setColour(RED);
+				mainMenuButtons[selected].setTextureSampler(unselectedTex[selected]);
 				mainMenuButtons[++selected].setColour(GREEN);
+				mainMenuButtons[selected].setTextureSampler(selectedTex[selected]);
 				Input::keysPressed[KEY_DOWN] = false;
 			}
 		}
 		if (Input::keysPressed[KEY_UP]){
 			if (selected != ONE_PLAYER){
 				mainMenuButtons[selected].setColour(RED);
+				mainMenuButtons[selected].setTextureSampler(unselectedTex[selected]);
 				mainMenuButtons[--selected].setColour(GREEN);
+				mainMenuButtons[selected].setTextureSampler(selectedTex[selected]);
 				Input::keysPressed[KEY_UP] = false;
 			}
 		}
@@ -87,7 +108,9 @@ int Menu::inGameMenu(){
 	// Reset buttons to default state (top button selected, the rest not)
 	selected = RESUME;
 	inGameMenuButtons[0].setColour(GREEN);
+	inGameMenuButtons[0].setTextureSampler(inGameSelectedTex[0]);
 	inGameMenuButtons[1].setColour(RED);
+	inGameMenuButtons[1].setTextureSampler(inGameUnselectedTex[1]);
 
 	while (!resumeGame){
 
@@ -117,14 +140,18 @@ int Menu::inGameMenu(){
 		if (Input::keysPressed[KEY_DOWN]){
 			if (selected != MAIN_MENU){
 				inGameMenuButtons[selected].setColour(RED);
+				inGameMenuButtons[selected].setTextureSampler(inGameUnselectedTex[selected]);
 				inGameMenuButtons[++selected].setColour(GREEN);
+				inGameMenuButtons[selected].setTextureSampler(inGameSelectedTex[selected]);
 				Input::keysPressed[KEY_DOWN] = false;
 			}
 		}
 		if (Input::keysPressed[KEY_UP]){
 			if (selected != RESUME){
 				inGameMenuButtons[selected].setColour(RED);
+				inGameMenuButtons[selected].setTextureSampler(inGameUnselectedTex[selected]);
 				inGameMenuButtons[--selected].setColour(GREEN);
+				inGameMenuButtons[selected].setTextureSampler(inGameSelectedTex[selected]);
 				Input::keysPressed[KEY_UP] = false;
 			}
 		}
@@ -140,4 +167,8 @@ int Menu::inGameMenu(){
 			}
 		}
 	}
+}
+
+void Menu::displayScore(int p1Score, int p2Score){
+
 }

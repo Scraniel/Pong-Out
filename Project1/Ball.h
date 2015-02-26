@@ -12,7 +12,7 @@ class Ball : public Rectangle {
 	void attachToPaddle(float *, float *);
 	void generalCollide(Rectangle *); 
 public:
-	Ball(float, float, float, float, glm::vec3 colour, Player *);
+	Ball(float, float, float, float, glm::vec3 colour, Player *, GLuint);
 	Ball();
 	// Consider moving this up to Rectangle if the ball class inherits from it.
 	// Alternatively, create another parent class that deals with movement, and

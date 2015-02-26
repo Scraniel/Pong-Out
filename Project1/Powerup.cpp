@@ -1,7 +1,7 @@
 #include "Powerup.h"
 
 
-Powerup::Powerup(float x, float y, int direction, int type) : Rectangle(x, y, 20, 20, ORANGE) {
+Powerup::Powerup(float x, float y, int direction, int type, GLuint textureSampler) : Rectangle(x, y, 20, 20, ORANGE, textureSampler) {
 	this->destroy = false;
 	this->dx = direction * POWERUP_SPEED;
 	this->type = type;

@@ -13,8 +13,9 @@ class Player : public Rectangle {
 	int score, currentSpeed;
 	void setScore(int);
 	Timer speedUp, slowDown, biggerPaddle, multiBall;
+	GLuint ballTexture;
 public:
-	Player(float, float, float, float, glm::vec3 colour, short, short, short, short, short, short, Ball *);
+	Player(float, float, float, float, glm::vec3 colour, short, short, short, short, short, short, Ball *, GLuint);
 	Player();
 	// Consider moving this up to Rectangle if the ball class inherits from it.
 	// Alternatively, create another parent class that deals with movement, and
@@ -49,7 +50,8 @@ public:
 	bool * cpuMove(std::vector<Ball>);
 	// Resets the player's position and score back to default
 	void reset();
-	// Gives the player a powerup
+	// Gives the player a 
+
 	void startPowerup(int);
 	// Removes a powerup
 	void stopPowerup(int);
@@ -57,6 +59,9 @@ public:
 	int getCurrentSpeed();
 	// Checks current powerups, removes them if enough time has passed
 	void checkPowerups();
+	
+	void setBallTexture(GLuint);
+	GLuint getBallTexture();
 };
 
 #endif

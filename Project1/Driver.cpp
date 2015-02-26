@@ -136,6 +136,10 @@ int main(void)
 				}
 			}
 		}
+
+		if (db.getBricks().empty()){
+
+		}
 		
 
 	} // Check if the ESC key was pressed or the window was closed

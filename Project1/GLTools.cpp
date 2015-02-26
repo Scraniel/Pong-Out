@@ -139,7 +139,7 @@ void GLTools::reloadMVPUniform(Rectangle *object){
 	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &(object->getModel()[0][0]));
 
 	// Sending texture data
-	GLuint texture = decodeLodePNG(object->getTexturePath());
+	GLuint texture = object->getTextureSampler();
 	GLuint textureID = glGetUniformLocation(programID, "textureSampler");
 	// Bind our texture in Texture Unit 0
 	glActiveTexture(GL_TEXTURE0);
@@ -233,6 +233,8 @@ GLuint GLTools::decodeLodePNG(const char* filename){
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	return textureID;
 }

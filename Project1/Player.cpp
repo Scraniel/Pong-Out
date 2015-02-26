@@ -2,7 +2,7 @@
 #include "Ball.h"
 
 //TODO: Change the balls list into a vector
-Player::Player(float x, float y, float width, float height, glm::vec3 colour, short upKey, short downKey, short leftKey, short rightKey, short launchKey, short id, Ball * ball) : Rectangle(x, y, width, height, colour){
+Player::Player(float x, float y, float width, float height, glm::vec3 colour, short upKey, short downKey, short leftKey, short rightKey, short launchKey, short id, Ball * ball, GLuint textureSampler) : Rectangle(x, y, width, height, colour, textureSampler){
 	this->setInputKeys(upKey, downKey, leftKey, rightKey, launchKey);
 	// May need to do some refactoring when adding additional inputs (ie. AI / network players).
 	// It may be better style to only set these when receiving input (but maybe not).
@@ -222,4 +222,12 @@ void Player::checkPowerups(){
 	if (biggerPaddle.currentTime() >= POWERUP_TIME){
 		this->stopPowerup(BIGGER_PADDLE);
 	}
+}
+
+void Player::setBallTexture(GLuint ballTexture){
+	this->ballTexture = ballTexture;
+}
+
+GLuint Player::getBallTexture(){
+	return this->ballTexture;
 }

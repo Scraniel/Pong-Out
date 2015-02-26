@@ -1,7 +1,7 @@
 #include "Rectangle.h"
 #include <stdio.h>
 
-Rectangle::Rectangle(float x, float y, float width, float height, glm::vec3 colour){
+Rectangle::Rectangle(float x, float y, float width, float height, glm::vec3 colour, GLuint textureSampler){
 	this->x = x;
 	this->y = y;
 	this->width = width;
@@ -14,6 +14,7 @@ Rectangle::Rectangle(float x, float y, float width, float height, glm::vec3 colo
 	this->hitLeft = false;
 	this->hitRight = false;
 	this->texturePath = BRICK_TEXTURE;
+	this->textureSampler = textureSampler;
 
 	// need to implement scaling based on width and height
 	glm::mat4 scale = glm::scale(glm::vec3(width / W_WIDTH, height / W_HEIGHT, 0.0));
@@ -147,4 +148,12 @@ void Rectangle::setTexturePath(const char * texturePath){
 
 const char * Rectangle::getTexturePath(){
 	return texturePath;
+}
+
+GLuint Rectangle::getTextureSampler(){
+	return this->textureSampler;
+}
+
+void Rectangle::setTextureSampler(GLuint textureSampler){
+	this->textureSampler = textureSampler;
 }

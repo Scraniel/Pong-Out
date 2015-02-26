@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Constants.h"
 #include <vector>
+#include "stdglincludes.h"
 extern short W_WIDTH_NO_BORDER;
 extern short W_HEIGHT_NO_BORDER;
 
@@ -18,9 +19,10 @@ protected:
 	float width, height, x, y, dx, dy;
 	glm::mat4 model;
 	glm::vec3 colour;
-	const char * texturePath;
+	const char * texturePath; // may not be necessary with the textureSampler GLuint
+	GLuint textureSampler;
 public:
-	Rectangle(float, float, float, float, glm::vec3);
+	Rectangle(float, float, float, float, glm::vec3, GLuint);
 	Rectangle();
 	void setWidth(float);
 	void setHeight(float);
@@ -43,7 +45,10 @@ public:
 	// was hit.
 	virtual void collide(Rectangle*);
 	void setTexturePath(const char *);
-	const char * getTexturePath();
+	const char * getTexturePath(); // may not be necessary with the textureSampler GLuint
+
+	GLuint getTextureSampler();
+	void setTextureSampler(GLuint);
 
 };
 

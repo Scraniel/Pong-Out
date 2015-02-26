@@ -3,26 +3,39 @@
 // classes that need to access these objects will query the Database.
 
 Database::Database(bool singlePlayer){
-	Player newPlayer(100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, BLUE, KEY_W, KEY_S, KEY_A, KEY_D, SPACEBAR, 1, NULL);
-	newPlayer.setTexturePath(PLAYER1_PADDLE);
+	this->p1TextureSampler = GLTools::decodeLodePNG(PLAYER1_PADDLE);
+	this->p2TextureSampler = GLTools::decodeLodePNG(PLAYER2_PADDLE);
+	this->b1TextureSampler = GLTools::decodeLodePNG(PLAYER1_BALL);
+	this->b2TextureSampler = GLTools::decodeLodePNG(PLAYER2_BALL);
+	this->brickTextureSampler = GLTools::decodeLodePNG(BRICK_TEXTURE);
+	this->speedUpSampler = GLTools::decodeLodePNG("Assets/Graphics/PowerUpRed.png");
+	this->slowDownSampler = GLTools::decodeLodePNG("Assets/Graphics/PowerUpBlue.png");
+	this->multiBallSampler = GLTools::decodeLodePNG("Assets/Graphics/PowerUpPink.png");
+	this->bigPaddleSampler = GLTools::decodeLodePNG("Assets/Graphics/PowerUpGreen.png");
+
+	Player newPlayer(100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, 100.0f, BLUE, KEY_W, KEY_S, KEY_A, KEY_D, SPACEBAR, 1, NULL, p1TextureSampler);
+	newPlayer.setTexturePath(PLAYER1_PADDLE); // May not be necessary now
+	newPlayer.setBallTexture(this->b1TextureSampler);
 	players.push_back(newPlayer);
 
 	if (singlePlayer){
-		Player newPlayer(W_WIDTH - 100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, PADDLE_LENGTH_NORMAL, RED, CPU_UP, CPU_DOWN, CPU_LEFT, CPU_RIGHT, CPU_LAUNCH, 2, NULL);
+		Player newPlayer(W_WIDTH - 100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, PADDLE_LENGTH_NORMAL, RED, CPU_UP, CPU_DOWN, CPU_LEFT, CPU_RIGHT, CPU_LAUNCH, 2, NULL, p2TextureSampler);
 		newPlayer.setTexturePath(PLAYER2_PADDLE);
+		newPlayer.setBallTexture(this->b2TextureSampler);
 		players.push_back(newPlayer);
 	}
 	else{
-		Player newPlayer(W_WIDTH - 100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, PADDLE_LENGTH_NORMAL, RED, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, R_CTRL, 2, NULL);
+		Player newPlayer(W_WIDTH - 100.0f, (W_HEIGHT / 2.0) + 50, 25.0f, PADDLE_LENGTH_NORMAL, RED, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, R_CTRL, 2, NULL, p2TextureSampler);
 		newPlayer.setTexturePath(PLAYER2_PADDLE);
+		newPlayer.setBallTexture(this->b2TextureSampler);
 		players.push_back(newPlayer);
 	}
 
-	Ball newBall1(players[0].getX() + players[0].getWidth(), players[0].getY() - (players[0].getHeight() / 2.0) + 12.5, 25.0f, 25.0f, players[0].getColour(), &players[0]);
+	Ball newBall1(players[0].getX() + players[0].getWidth(), players[0].getY() - (players[0].getHeight() / 2.0) + 12.5, 25.0f, 25.0f, players[0].getColour(), &players[0], b1TextureSampler);
 	newBall1.setTexturePath(PLAYER1_BALL);
 	balls.push_back(newBall1);
 
-	Ball newBall2(players[1].getX() - players[1].getWidth(), players[1].getY() - (players[1].getHeight() / 2.0) + 12.5, 25.0f, 25.0f, players[1].getColour(), &players[1]);
+	Ball newBall2(players[1].getX() - players[1].getWidth(), players[1].getY() - (players[1].getHeight() / 2.0) + 12.5, 25.0f, 25.0f, players[1].getColour(), &players[1], b2TextureSampler);
 	newBall2.setTexturePath(PLAYER2_BALL);
 	balls.push_back(newBall2);
 
@@ -43,13 +56,13 @@ void Database::resetBricks(){
 	*/
 	// Create bricks
 	for (int i = 0; i < 14; i++){
-		Brick newBrick((2 * W_WIDTH) / 5.0, W_HEIGHT - i*BRICK_HEIGHT, BRICK_WIDTH, BRICK_HEIGHT, GREEN, true, 1);
+		Brick newBrick((2 * W_WIDTH) / 5.0, W_HEIGHT - i*BRICK_HEIGHT, BRICK_WIDTH, BRICK_HEIGHT, GREEN, true, 1, this->brickTextureSampler);
 		newBrick.setTexturePath(BRICK_TEXTURE);
 		bricks.push_back(newBrick);
 	}
 
 	for (int i = 0; i < 14; i++){
-		Brick newBrick((3 * W_WIDTH) / 5.0, W_HEIGHT - i*BRICK_HEIGHT, BRICK_WIDTH, BRICK_HEIGHT, GREEN, false, 1);
+		Brick newBrick((3 * W_WIDTH) / 5.0, W_HEIGHT - i*BRICK_HEIGHT, BRICK_WIDTH, BRICK_HEIGHT, GREEN, false, 1, this->brickTextureSampler);
 		newBrick.setTexturePath(BRICK_TEXTURE);
 		bricks.push_back(newBrick);
 	}
@@ -292,7 +305,25 @@ void Database::cpuMove(){
 
 void Database::generatePowerup(float x, float y, int direction){
 	// generate a random powerup and add it to the list
-	powerups.push_back(Powerup(x, y, direction, rand() % 4 + 1));
+	int powerup = rand() % 4 + 1;
+	GLuint textureSampler;
+	switch (powerup){
+	case SPEED_UP:
+		textureSampler = speedUpSampler;
+		break;
+	case SLOW_DOWN:
+		textureSampler = slowDownSampler;
+		break;
+	case MULTI_BALL:
+		textureSampler = multiBallSampler;
+		break;
+	case BIGGER_PADDLE:
+		textureSampler = bigPaddleSampler;
+		break;
+	}
+
+
+	powerups.push_back(Powerup(x, y, direction, powerup, textureSampler));
 }
 
 

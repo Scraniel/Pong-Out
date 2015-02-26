@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 
-Ball::Ball(float x, float y, float width, float height, glm::vec3 colour, Player * attachedTo) : Rectangle(x, y, width, height, colour){
+Ball::Ball(float x, float y, float width, float height, glm::vec3 colour, Player * attachedTo, GLuint textureSampler) : Rectangle(x, y, width, height, colour, textureSampler){
 	this->dx = BALL_START_DX;
 	this->dy = BALL_START_DY;
 	this->attached = true;
@@ -153,6 +153,7 @@ void Ball::collide(Player * player){
 	// Set up information about which player was hit
 	this->setLastHit(player);
 	this->setColour(player->getColour());
+	this->setTextureSampler(player->getBallTexture());
 }
 
 void Ball::collide(Brick * brick){

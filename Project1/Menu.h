@@ -14,6 +14,10 @@ class Menu
 	Rectangle inGameMenuButtons[2];
 	Rectangle inGameMenuPanel;
 	short selected;
+	GLuint selectedTex[4];
+	GLuint unselectedTex[4];
+	GLuint inGameSelectedTex[2];
+	GLuint inGameUnselectedTex[2];
 public:
 	Menu();
 	// Draws the menu and enters the 'menu' loop, which will exit once the player decides to play the game	
