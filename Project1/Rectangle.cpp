@@ -15,6 +15,7 @@ Rectangle::Rectangle(float x, float y, float width, float height, glm::vec3 colo
 	this->hitRight = false;
 	this->texturePath = BRICK_TEXTURE;
 	this->textureSampler = textureSampler;
+	this->rotation = 0;
 
 	// need to implement scaling based on width and height
 	glm::mat4 scale = glm::scale(glm::vec3(width / W_WIDTH, height / W_HEIGHT, 0.0));
@@ -49,7 +50,7 @@ void Rectangle::setX(float x){
 	// set in the matrix
 	glm::mat4 scale = glm::scale(glm::vec3(width / W_WIDTH, height / W_HEIGHT, 0.0));
 	glm::mat4 translate = glm::translate(glm::vec3((x / (W_WIDTH * 0.5)) - 1, (y / (W_HEIGHT * 0.5)) - 1, 0.0));
-	glm::mat4 rotate = glm::mat4(); // identity matrix for now
+	glm::mat4 rotate = glm::rotate(rotation, glm::vec3(0,0,1)); // identity matrix for now
 
 	this->model = translate * rotate * scale;
 }
@@ -60,7 +61,7 @@ void Rectangle::setY(float y){
 	// set in the matrix.
 	glm::mat4 scale = glm::scale(glm::vec3(width / W_WIDTH, height / W_HEIGHT, 0.0));
 	glm::mat4 translate = glm::translate(glm::vec3((x / (W_WIDTH * 0.5)) - 1, (y / (W_HEIGHT * 0.5)) - 1, 0.0));
-	glm::mat4 rotate = glm::mat4(); // identity matrix for now
+	glm::mat4 rotate = glm::rotate(rotation, glm::vec3(0, 0, 1)); // identity matrix for now
 
 	this->model = translate * rotate * scale;
 }

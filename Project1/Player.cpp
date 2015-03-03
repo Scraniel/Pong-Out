@@ -15,6 +15,9 @@ Player::Player(float x, float y, float width, float height, glm::vec3 colour, sh
 	this->score = 0;
 	this->id = id;
 	this->currentSpeed = PADDLE_SPEED_NORMAL;
+	if (id == 2){
+	//	this->rotation = 180; // rotation is not working correctly at the moment
+	}
 }
 
 Player::Player(){}

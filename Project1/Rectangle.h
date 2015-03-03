@@ -16,7 +16,7 @@ extern short W_HEIGHT_NO_BORDER;
 class Rectangle {
 protected:
 	bool hitTop, hitBottom, hitLeft, hitRight;
-	float width, height, x, y, dx, dy;
+	float width, height, x, y, dx, dy, rotation;
 	glm::mat4 model;
 	glm::vec3 colour;
 	const char * texturePath; // may not be necessary with the textureSampler GLuint
